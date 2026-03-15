@@ -178,6 +178,32 @@ class YamaBruhSynth {
       }
     });
   }
+
+  // ── Effect toggles (PSS-470 style) ──────────────────────────────────
+
+  setVibrato(on, rate, depth) {
+    if (this.workletNode) {
+      this.workletNode.port.postMessage({ type: 'vibrato', on, rate, depth });
+    }
+    if (this.wasm?.set_vibrato) {
+      this.wasm.set_vibrato(on ? 1 : 0, rate || 5.5, depth ?? 0.004);
+    }
+  }
+
+  setPortamento(on, time) {
+    if (this.workletNode) {
+      this.workletNode.port.postMessage({ type: 'portamento', on, time });
+    }
+  }
+
+  setSustain(on, mult) {
+    if (this.workletNode) {
+      this.workletNode.port.postMessage({ type: 'sustain', on, mult });
+    }
+    if (this.wasm?.set_sustain) {
+      this.wasm.set_sustain(on ? 1 : 0, mult || 3.0);
+    }
+  }
 }
 
 window.synth = new YamaBruhSynth();

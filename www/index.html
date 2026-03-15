@@ -55,20 +55,55 @@
         <div class="panel-label">VOICE SELECTOR</div>
         <div class="selector-grid" id="selector-grid">
           <div class="sel-col">
-            <span class="sel-label">0</span><button class="sel-btn" data-num="0"></button>
-            <span class="sel-label">1</span><button class="sel-btn" data-num="1"></button>
-            <span class="sel-label">2</span><button class="sel-btn" data-num="2"></button>
-            <span class="sel-label">3</span><button class="sel-btn" data-num="3"></button>
-            <span class="sel-label">4</span><button class="sel-btn" data-num="4"></button>
-          </div>
-          <div class="sel-col">
             <span class="sel-label">5</span><button class="sel-btn" data-num="5"></button>
             <span class="sel-label">6</span><button class="sel-btn" data-num="6"></button>
             <span class="sel-label">7</span><button class="sel-btn" data-num="7"></button>
             <span class="sel-label">8</span><button class="sel-btn" data-num="8"></button>
             <span class="sel-label">9</span><button class="sel-btn" data-num="9"></button>
           </div>
+          <div class="sel-col">
+            <span class="sel-label">0</span><button class="sel-btn" data-num="0"></button>
+            <span class="sel-label">1</span><button class="sel-btn" data-num="1"></button>
+            <span class="sel-label">2</span><button class="sel-btn" data-num="2"></button>
+            <span class="sel-label">3</span><button class="sel-btn" data-num="3"></button>
+            <span class="sel-label">4</span><button class="sel-btn" data-num="4"></button>
+          </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Effect Switches (PSS-470 style) -->
+    <div class="effects-row">
+      <button class="fx-btn" id="fx-sustain">SUSTAIN</button>
+      <button class="fx-btn" id="fx-vibrato">VIBRATO</button>
+      <button class="fx-btn" id="fx-portamento">PORTAMENTO</button>
+    </div>
+
+    <!-- Rhythm Section -->
+    <div class="rhythm-section">
+      <div class="panel-label">RHYTHM</div>
+      <div class="rhythm-controls">
+        <div class="rhythm-selector">
+          <button class="rhythm-btn" id="rhythm-prev">&lt;</button>
+          <div class="rhythm-display" id="rhythm-display">01 8 Beat</div>
+          <button class="rhythm-btn" id="rhythm-next">&gt;</button>
+        </div>
+        <div class="rhythm-transport">
+          <button class="rhythm-btn transport-btn" id="rhythm-start">START</button>
+          <button class="rhythm-btn transport-btn" id="rhythm-fill">FILL</button>
+        </div>
+        <div class="rhythm-tempo">
+          <button class="rhythm-btn tempo-btn" id="tempo-down">&minus;</button>
+          <div class="tempo-display" id="tempo-display">120</div>
+          <button class="rhythm-btn tempo-btn" id="tempo-up">&plus;</button>
+          <span class="tempo-label">BPM</span>
+        </div>
+      </div>
+      <div class="rhythm-steps" id="rhythm-steps">
+        <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
+        <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
+        <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
+        <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
       </div>
     </div>
 
@@ -140,9 +175,58 @@
         <button class="tweak-reset" id="tweak-reset">RESET TO PRESET</button>
       </div>
     </div>
+
+    <!-- Visual Config (collapsible) -->
+    <div class="tweak-section">
+      <button class="tweak-toggle" id="visual-toggle">VISUAL CONFIG &#9660;</button>
+      <div class="tweak-body" id="visual-body">
+        <div class="tweak-grid">
+          <div class="tweak-param">
+            <label>DUST</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-dust">
+            <span class="tw-val" id="vis-dust-val">0.50</span>
+          </div>
+          <div class="tweak-param">
+            <label>WEAR</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-wear">
+            <span class="tw-val" id="vis-wear-val">0.50</span>
+          </div>
+          <div class="tweak-param">
+            <label>PATINA</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-patina">
+            <span class="tw-val" id="vis-patina-val">0.30</span>
+          </div>
+          <div class="tweak-param">
+            <label>LIGHT</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-light">
+            <span class="tw-val" id="vis-light-val">0.70</span>
+          </div>
+          <div class="tweak-param">
+            <label>GRAIN</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-grain">
+            <span class="tw-val" id="vis-grain-val">0.50</span>
+          </div>
+          <div class="tweak-param">
+            <label>SCRATCHES</label>
+            <input type="range" min="0" max="1" step="0.01" id="vis-scratches">
+            <span class="tw-val" id="vis-scratches-val">0.50</span>
+          </div>
+          <div class="tweak-param vis-tod-param">
+            <label>TIME OF DAY</label>
+            <div class="tod-controls">
+              <button class="tod-mode-btn" id="tod-mode-btn">AUTO</button>
+              <input type="range" min="0" max="24" step="0.1" id="vis-tod" disabled>
+            </div>
+            <span class="tw-val" id="vis-tod-val">auto</span>
+          </div>
+        </div>
+        <button class="tweak-reset" id="visual-reset">RESET DEFAULTS</button>
+      </div>
+    </div>
   </div>
 
   <script src="synth.js"></script>
+  <script src="drums.js"></script>
   <script src="midi.js"></script>
   <script src="app.js"></script>
 </body>

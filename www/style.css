@@ -61,14 +61,17 @@ html, body {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    #0a0a0a 5%,
-    #0a0a0a 95%,
+    #080808 5%,
+    #0a0a0a 50%,
+    #080808 95%,
     transparent 100%
   );
   border-radius: 1px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 1px 0 rgba(0,0,0,0.5);
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -1px 0 rgba(0,0,0,0.8),
+    0 1px 1px rgba(0,0,0,0.6),
+    0 2px 2px rgba(0,0,0,0.2);
 }
 
 /* ── Header Plate ──────────────────────────────────────────────────── */
@@ -123,10 +126,15 @@ html, body {
 .voice-bank-panel {
   margin: 0 14px 12px;
   padding: 10px 14px;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.4);
   border: 1px solid #2a2a2a;
+  border-top-color: #222;
+  border-bottom-color: #333;
   border-radius: 2px;
-  box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.45),
+    inset 0 -1px 0 rgba(255,255,255,0.02),
+    0 1px 0 rgba(255,255,255,0.02);
 }
 
 .voice-bank-grid {
@@ -199,14 +207,29 @@ html, body {
 }
 
 .seg-housing {
-  background: #080808;
-  border: 2px solid #1a1a1a;
+  background: #060606;
+  border: 2px solid #222;
+  border-top-color: #181818;
+  border-bottom-color: #2a2a2a;
   border-radius: 4px;
   padding: 10px 16px;
   display: inline-block;
   box-shadow:
-    inset 0 2px 8px rgba(0,0,0,0.9),
-    0 1px 0 rgba(255,255,255,0.03);
+    inset 0 3px 12px rgba(0,0,0,0.95),
+    inset 0 -1px 3px rgba(0,0,0,0.5),
+    0 1px 0 rgba(255,255,255,0.04),
+    0 2px 6px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.seg-housing::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
 }
 
 .seg-digits {
@@ -245,7 +268,14 @@ html, body {
 
 .selector-grid {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  background: rgba(0,0,0,0.3);
+  padding: 8px 10px;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,0.5),
+    inset 0 -1px 0 rgba(255,255,255,0.02),
+    0 1px 0 rgba(255,255,255,0.03);
 }
 
 .sel-col {
@@ -264,23 +294,91 @@ html, body {
 }
 
 .sel-btn {
-  width: 48px;
-  height: 14px;
+  width: 56px;
+  height: 15px;
   border: none;
   border-radius: 2px;
   cursor: pointer;
-  background: linear-gradient(180deg, #3cc88a 0%, #28a068 50%, #1a7850 100%);
+  background: linear-gradient(180deg, #4ad89a 0%, #3cc88a 15%, #2aaa6e 60%, #1e8858 85%, #1a7850 100%);
   box-shadow:
-    0 2px 3px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.15);
+    0 3px 5px rgba(0,0,0,0.5),
+    0 1px 2px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
   transition: transform 0.06s, box-shadow 0.06s;
   margin-bottom: 4px;
+  position: relative;
+}
+
+.sel-btn::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  border-radius: 1px;
 }
 
 .sel-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 1px rgba(0,0,0,0.4);
-  background: linear-gradient(180deg, #28a068 0%, #1a7850 100%);
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(0,0,0,0.2);
+  background: linear-gradient(180deg, #2aaa6e 0%, #1e8858 60%, #1a7850 100%);
+}
+
+.sel-btn:active::after {
+  opacity: 0;
+}
+
+/* ── Effect Switches (PSS-470 style) ──────────────────────────────── */
+.effects-row {
+  display: flex;
+  gap: 8px;
+  margin: 0 14px 16px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  box-shadow:
+    inset 0 2px 5px rgba(0,0,0,0.4),
+    0 1px 0 rgba(255,255,255,0.02);
+}
+
+.fx-btn {
+  flex: 1;
+  padding: 8px 6px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  color: #558877;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.fx-btn:hover {
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+  color: #77aa99;
+}
+
+.fx-btn.active {
+  background: linear-gradient(180deg, #1a5038 0%, #0d3020 100%);
+  color: #77ffdd;
+  border-color: #22ccaa;
+  box-shadow:
+    0 0 8px rgba(34,204,170,0.2),
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 /* ── ID Sections ───────────────────────────────────────────────────── */
@@ -330,19 +428,26 @@ html, body {
   height: 28px;
   border: none;
   border-radius: 3px;
-  background: linear-gradient(180deg, #3cc88a 0%, #2aaa6a 100%);
+  background: linear-gradient(180deg, #4ad89a 0%, #3cc88a 20%, #2aaa6a 80%, #1e8858 100%);
   color: #0a2a1a;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 2px 3px rgba(0,0,0,0.3);
-  transition: transform 0.06s;
+  box-shadow:
+    0 3px 4px rgba(0,0,0,0.4),
+    0 1px 1px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.15);
+  transition: transform 0.06s, box-shadow 0.06s;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .play-btn:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.3),
+    inset 0 1px 2px rgba(0,0,0,0.15);
 }
 
 .play-btn.playing {
@@ -403,10 +508,15 @@ html, body {
 .keyboard-section {
   margin: 0 14px;
   padding: 12px;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.25);
   border: 1px solid #2a2a2a;
+  border-top-color: #222;
+  border-bottom-color: #333;
   border-radius: 4px;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow:
+    inset 0 3px 8px rgba(0,0,0,0.3),
+    inset 0 -1px 0 rgba(255,255,255,0.02),
+    0 1px 0 rgba(255,255,255,0.03);
 }
 
 .keyboard {
@@ -579,6 +689,201 @@ html, body {
   background: linear-gradient(180deg, #333 0%, #222 100%);
 }
 
+/* ── Visual Config TOD Controls ───────────────────────────────────── */
+.tod-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tod-controls input[type="range"] {
+  flex: 1;
+}
+
+.tod-mode-btn {
+  padding: 3px 8px;
+  border: 1px solid #333;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  color: #22ccaa;
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.tod-mode-btn.manual {
+  color: #ff8844;
+  border-color: #664422;
+}
+
+.vis-tod-param {
+  grid-column: 1 / -1;
+}
+
+/* ── Rhythm Section ───────────────────────────────────────────────── */
+.rhythm-section {
+  margin: 0 14px 16px;
+  padding: 10px 14px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a2a2a;
+  border-top-color: #222;
+  border-bottom-color: #333;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.45),
+    inset 0 -1px 0 rgba(255,255,255,0.02),
+    0 1px 0 rgba(255,255,255,0.02);
+}
+
+.rhythm-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.rhythm-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.rhythm-display {
+  flex: 1;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  color: #22ccaa;
+  letter-spacing: 1px;
+  padding: 6px 8px;
+  background: #060606;
+  border: 1px solid #222;
+  border-radius: 3px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rhythm-btn {
+  padding: 6px 10px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  color: #22ccaa;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.rhythm-btn:hover {
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+  color: #77ffdd;
+}
+
+.rhythm-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.transport-btn {
+  padding: 6px 14px;
+}
+
+.transport-btn.active {
+  background: linear-gradient(180deg, #1a5038 0%, #0d3020 100%);
+  color: #77ffdd;
+  border-color: #22ccaa;
+  box-shadow:
+    0 0 8px rgba(34,204,170,0.2),
+    0 2px 4px rgba(0,0,0,0.3);
+}
+
+.rhythm-transport {
+  display: flex;
+  gap: 6px;
+}
+
+.rhythm-tempo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tempo-display {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff4444;
+  text-shadow: 0 0 6px rgba(255,68,68,0.3);
+  min-width: 32px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.tempo-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.tempo-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #558877;
+  font-weight: bold;
+}
+
+/* Step indicator dots */
+.rhythm-steps {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  transition: background 0.05s, box-shadow 0.05s;
+}
+
+.step-dot:nth-child(4n+1) {
+  border-color: #444;
+}
+
+.step-dot.active {
+  background: #22ccaa;
+  border-color: #22ccaa;
+  box-shadow: 0 0 6px rgba(34,204,170,0.5);
+}
+
+.step-dot.beat {
+  background: #ff4444;
+  border-color: #ff4444;
+  box-shadow: 0 0 6px rgba(255,68,68,0.4);
+}
+
 /* ── Responsiveness ────────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .brand { font-size: 20px; letter-spacing: 3px; }
@@ -589,4 +894,7 @@ html, body {
   .controls-row { gap: 12px; }
   .id-field { font-size: 10px; padding: 5px 6px; }
   .tweak-grid { grid-template-columns: 1fr; }
+  .rhythm-controls { flex-direction: column; gap: 8px; }
+  .rhythm-selector { min-width: unset; }
+  .step-dot { width: 6px; height: 6px; }
 }

@@ -9,6 +9,18 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
     // Compressor state
     this.comp1Env = 0;
     this.comp2Env = 0;
+    // Vibrato LFO state
+    this.vibratoOn = false;
+    this.vibratoRate = 5.5;   // Hz
+    this.vibratoDepth = 0.004; // ~7 cents
+    this.vibratoPhase = 0;
+    // Portamento
+    this.portaOn = false;
+    this.portaTime = 0.08; // seconds
+    this.lastFreq = 0;     // track last note frequency
+    // Global sustain
+    this.sustainOn = false;
+    this.sustainMult = 3.0; // release multiplier when sustain engaged
     this.port.onmessage = (e) => this._onMessage(e.data);
   }
 
@@ -23,9 +35,13 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
         }
         // Cap polyphony at 16
         if (this.voices.length >= 16) this.voices.shift();
+        // Portamento: start from last played frequency
+        const startFreq = (this.portaOn && this.lastFreq > 0) ? this.lastFreq : msg.freq;
+        this.lastFreq = msg.freq;
         this.voices.push({
           note: msg.note,
-          freq: msg.freq,
+          freq: msg.freq,       // target frequency
+          curFreq: startFreq,   // current frequency (for portamento)
           velocity: msg.velocity,
           cp: 0, mp: 0, pm: 0,
           es: 0, el: 0, et: 0, rl: 0,
@@ -48,6 +64,22 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
         this.preset = msg.params;
         break;
       }
+      case 'vibrato': {
+        this.vibratoOn = msg.on;
+        if (msg.rate !== undefined) this.vibratoRate = msg.rate;
+        if (msg.depth !== undefined) this.vibratoDepth = msg.depth;
+        break;
+      }
+      case 'portamento': {
+        this.portaOn = msg.on;
+        if (msg.time !== undefined) this.portaTime = msg.time;
+        break;
+      }
+      case 'sustain': {
+        this.sustainOn = msg.on;
+        if (msg.mult !== undefined) this.sustainMult = msg.mult;
+        break;
+      }
     }
   }
 
@@ -60,16 +92,49 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
     const len = out.length;
     const dt = 1 / sr;
 
+    // Vibrato + portamento pre-compute
+    const vibOn = this.vibratoOn;
+    const vibRate = this.vibratoRate;
+    const vibDepth = this.vibratoDepth;
+    const portaOn = this.portaOn;
+    const portaCoeff = this.portaTime > 0.001 ? Math.exp(-dt / this.portaTime) : 0;
+    const susOn = this.sustainOn;
+    const susMult = this.sustainMult;
+
     for (let i = 0; i < len; i++) {
       let s = 0;
+
+      // Advance vibrato LFO (shared across all voices, like hardware)
+      let vibMod = 0;
+      if (vibOn) {
+        vibMod = Math.sin(this.vibratoPhase) * vibDepth;
+        this.vibratoPhase += TAU * vibRate * dt;
+        if (this.vibratoPhase > TAU) this.vibratoPhase -= TAU;
+      }
 
       for (let vi = this.voices.length - 1; vi >= 0; vi--) {
         const v = this.voices[vi];
         const p = v.p;
-        const crf = v.freq * p[0];
-        const mrf = v.freq * p[1];
+
+        // Portamento: glide curFreq toward target freq
+        if (portaOn && v.curFreq !== v.freq) {
+          v.curFreq = v.freq + (v.curFreq - v.freq) * portaCoeff;
+          // Snap when close enough
+          if (Math.abs(v.curFreq - v.freq) < 0.1) v.curFreq = v.freq;
+        } else {
+          v.curFreq = v.freq;
+        }
+
+        // Apply vibrato to frequency
+        const baseFreq = v.curFreq;
+        const freq = vibOn ? baseFreq * (1 + vibMod) : baseFreq;
+
+        const crf = freq * p[0];
+        const mrf = freq * p[1];
         const mi = p[2];
-        const atk = p[3], dec = p[4], sus = p[5], rel = p[6], fb = p[7];
+        const atk = p[3], dec = p[4], sus = p[5];
+        const rel = susOn ? p[6] * susMult : p[6];
+        const fb = p[7];
 
         // Track voice age — auto-kill stuck voices after 30s
         v.age += dt;

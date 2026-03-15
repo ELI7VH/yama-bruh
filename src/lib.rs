@@ -19,6 +19,13 @@ static mut NOTE_COUNT: u32 = 0;
 static mut CUSTOM_PRESET: [f32; 8] = [1.0, 1.0, 2.0, 0.01, 0.3, 0.3, 0.2, 0.0];
 static mut INPUT_BUF: [u8; 1024] = [0; 1024];
 
+// Global effects state
+static mut VIBRATO_ON: bool = false;
+static mut VIBRATO_RATE: f32 = 5.5;
+static mut VIBRATO_DEPTH: f32 = 0.004;
+static mut SUSTAIN_ON: bool = false;
+static mut SUSTAIN_MULT: f32 = 3.0;
+
 // ── PRNG ──────────────────────────────────────────────────────────────
 struct Rng(u32);
 
@@ -164,7 +171,8 @@ fn get_preset_data(index: u32) -> [f32; 8] {
         95 => [1.0,  4.0,  3.0,  0.001, 0.08, 0.2,  0.05, 0.5  ], // Arcade
         96 => [1.0,  1.0,  5.0,  0.001, 1.5,  0.0,  2.0,  0.3  ], // Game Over
         97 => [2.0,  1.0,  2.0,  0.001, 0.4,  0.0,  0.3,  0.0  ], // Power Up
-        _  => [1.0,  7.0,  3.0,  0.01,  0.1,  0.6,  0.15, 0.15 ], // Digital Vox
+        98 => [1.0,  7.0,  3.0,  0.01,  0.1,  0.6,  0.15, 0.15 ], // Digital Vox
+        _  => [1.0,  1.0,  2.0,  0.01,  0.3,  0.3,  0.2,  0.0  ], // fallback
     }
 }
 
@@ -184,8 +192,12 @@ fn render_fm_note(
     let attack = preset[3];
     let decay = preset[4];
     let sustain = preset[5];
-    let release = preset[6];
+    let release = unsafe { if SUSTAIN_ON { preset[6] * SUSTAIN_MULT } else { preset[6] } };
     let feedback = preset[7];
+
+    let (vibrato_on, vib_rate, vib_depth) = unsafe {
+        (VIBRATO_ON, VIBRATO_RATE, VIBRATO_DEPTH)
+    };
 
     let carrier_freq = freq * cr;
     let mod_freq = freq * mr;
@@ -232,6 +244,15 @@ fn render_fm_note(
             if r > 0.0 { r } else { 0.0 }
         };
 
+        // Vibrato LFO
+        let vib_mod = if vibrato_on {
+            let t = i as f32 / sample_rate;
+            sinf(TWO_PI * vib_rate * t) * vib_depth
+        } else {
+            0.0
+        };
+        let freq_mult = 1.0 + vib_mod;
+
         // 2-op FM
         let mod_signal = sinf(mod_phase + feedback * prev_mod);
         prev_mod = mod_signal;
@@ -239,8 +260,8 @@ fn render_fm_note(
 
         buf[offset + i] += carrier_signal * env * velocity * 0.45;
 
-        carrier_phase += TWO_PI * carrier_freq / sample_rate;
-        mod_phase += TWO_PI * mod_freq / sample_rate;
+        carrier_phase += TWO_PI * carrier_freq * freq_mult / sample_rate;
+        mod_phase += TWO_PI * mod_freq * freq_mult / sample_rate;
 
         if carrier_phase > TWO_PI {
             carrier_phase -= TWO_PI;
@@ -295,6 +316,23 @@ pub extern "C" fn set_custom_param(param: u32, value: f32) {
     let pidx = if param > 7 { 7 } else { param };
     unsafe {
         CUSTOM_PRESET[pidx as usize] = value;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn set_vibrato(on: u32, rate: f32, depth: f32) {
+    unsafe {
+        VIBRATO_ON = on != 0;
+        if rate > 0.0 { VIBRATO_RATE = rate; }
+        if depth >= 0.0 { VIBRATO_DEPTH = depth; }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn set_sustain(on: u32, mult: f32) {
+    unsafe {
+        SUSTAIN_ON = on != 0;
+        if mult > 0.0 { SUSTAIN_MULT = mult; }
     }
 }
 

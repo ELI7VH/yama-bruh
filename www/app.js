@@ -9,6 +9,16 @@
   let playingSources = new Map();
   const savedMidi = JSON.parse(localStorage.getItem('yamabruh_midi') || 'null');
 
+  // ── Visual Config State ──────────────────────────────────────────
+  const DEFAULT_VISUAL = { dust: 0.5, wear: 0.5, patina: 0.3, light: 0.7, grain: 0.5, scratches: 0.5, todMode: 'auto', todManual: 12 };
+  const visualConfig = { ...DEFAULT_VISUAL, ...JSON.parse(localStorage.getItem('yamabruh_visual') || '{}') };
+
+  function getTod() {
+    if (visualConfig.todMode === 'manual') return visualConfig.todManual;
+    const now = new Date();
+    return now.getHours() + now.getMinutes() / 60;
+  }
+
   // ── Init synth ────────────────────────────────────────────────────
   await window.synth.init();
   window.synth.currentPreset = currentPreset;
@@ -46,6 +56,13 @@
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
     uniform float u_flash;
+    uniform float u_tod;
+    uniform float u_dust;
+    uniform float u_wear;
+    uniform float u_patina;
+    uniform float u_light;
+    uniform float u_grain;
+    uniform float u_scratches;
 
     float hash(vec2 p) {
       return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -73,53 +90,115 @@
       return v;
     }
 
+    // Time-of-day light color
+    vec3 todColor(float t) {
+      vec3 night  = vec3(0.30, 0.35, 0.50);
+      vec3 dawn   = vec3(1.00, 0.70, 0.40);
+      vec3 day    = vec3(1.00, 0.98, 0.95);
+      vec3 sunset = vec3(1.00, 0.55, 0.28);
+      vec3 dusk   = vec3(0.50, 0.40, 0.60);
+      if (t < 5.0)  return night;
+      if (t < 7.0)  return mix(night, dawn,   (t - 5.0)  / 2.0);
+      if (t < 9.0)  return mix(dawn,  day,    (t - 7.0)  / 2.0);
+      if (t < 16.0) return day;
+      if (t < 18.0) return mix(day,   sunset, (t - 16.0) / 2.0);
+      if (t < 20.0) return mix(sunset,dusk,   (t - 18.0) / 2.0);
+      if (t < 22.0) return mix(dusk,  night,  (t - 20.0) / 2.0);
+      return night;
+    }
+
+    float todBright(float t) {
+      if (t < 5.0)  return 0.3;
+      if (t < 7.0)  return mix(0.3, 0.7, (t - 5.0)  / 2.0);
+      if (t < 9.0)  return mix(0.7, 1.0, (t - 7.0)  / 2.0);
+      if (t < 16.0) return 1.0;
+      if (t < 18.0) return mix(1.0, 0.7, (t - 16.0) / 2.0);
+      if (t < 20.0) return mix(0.7, 0.4, (t - 18.0) / 2.0);
+      if (t < 22.0) return mix(0.4, 0.3, (t - 20.0) / 2.0);
+      return 0.3;
+    }
+
     void main() {
       vec2 uv = gl_FragCoord.xy / u_resolution;
 
-      // Base aged plastic — dark charcoal
+      // Base aged plastic
       vec3 col = vec3(0.12, 0.12, 0.11);
 
-      // Large-scale discoloration
+      // Time-of-day lighting
+      vec3 lightCol = todColor(u_tod);
+      float brightness = todBright(u_tod) * u_light;
+
+      // Light sweeps east→west across the day
+      float lightAngle = mix(-0.8, 0.8, clamp((u_tod - 6.0) / 12.0, 0.0, 1.0));
+      vec2 lightDir = normalize(vec2(lightAngle, 0.5));
+      float dirLight = dot(uv - 0.5, lightDir) * 0.5 + 0.5;
+      col += lightCol * dirLight * brightness * 0.06;
+
+      // Discoloration + patina (yellowed aging)
       float stain = fbm(uv * 3.0 + 42.0);
-      col += vec3(stain * 0.04, stain * 0.03, stain * 0.01);
+      col += vec3(stain * 0.04, stain * 0.03, stain * 0.01) * (1.0 + u_patina);
+      float patinaZone = fbm(uv * 2.0 + 77.0);
+      col += vec3(0.03, 0.02, -0.01) * patinaZone * u_patina;
 
-      // Darker wear zones
-      float wear = fbm(uv * vec2(2.0, 5.0) + 100.0);
-      col -= wear * 0.03;
+      // Wear zones — darkened from use
+      float wearZone = fbm(uv * vec2(2.0, 5.0) + 100.0);
+      col -= wearZone * 0.03 * (0.5 + u_wear);
+      float groove = fbm(uv * vec2(1.5, 20.0) + 200.0);
+      col -= smoothstep(0.45, 0.55, groove) * 0.04 * u_wear;
 
-      // Micro-texture: plastic grain
-      float grain = noise(uv * 400.0);
-      col += (grain - 0.5) * 0.025;
+      // Plastic grain (micro-texture)
+      float grn = noise(uv * 400.0);
+      col += (grn - 0.5) * 0.025 * (0.3 + u_grain);
+      float fineGrn = noise(uv * 800.0);
+      col += (fineGrn - 0.5) * 0.012 * u_grain;
 
       // Scratches — horizontal bias
       for (int i = 0; i < 4; i++) {
         float fi = float(i);
         vec2 suv = uv * vec2(0.8, 50.0 + fi * 12.0) + vec2(fi * 17.3, fi * 31.7);
         float s = noise(suv);
-        float scratch = smoothstep(0.49, 0.5, s) * 0.025;
-        col += scratch;
+        col += smoothstep(0.49, 0.5, s) * 0.025 * u_scratches;
       }
+      // Diagonal micro-scratches
+      float diag = noise(uv * vec2(30.0, 30.0) + vec2(uv.y * 20.0, uv.x * 20.0));
+      col += smoothstep(0.48, 0.5, diag) * 0.015 * u_scratches;
 
-      // Specular highlight from mouse
+      // Dust — heavier in corners and edges
+      float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
+      float dustBase = fbm(uv * 8.0 + 300.0);
+      float dustEdge = 1.0 - smoothstep(0.0, 0.15, edgeDist);
+      float dustPattern = dustBase * 0.4 + dustEdge * 0.6;
+      vec3 dustCol = vec3(0.15, 0.14, 0.12);
+      col = mix(col, dustCol, dustPattern * u_dust * 0.15);
+      // Dust specks
+      float specks = noise(uv * 200.0 + 500.0);
+      col += smoothstep(0.7, 0.72, specks) * vec3(0.04, 0.035, 0.03) * u_dust;
+
+      // Specular highlight from mouse (lamp effect)
       vec2 mUV = u_mouse / u_resolution;
       float highlight = 1.0 - distance(uv, mUV);
-      highlight = pow(max(highlight, 0.0), 4.0) * 0.10;
-      col += highlight;
+      highlight = pow(max(highlight, 0.0), 4.0) * 0.10 * u_light;
+      col += highlight * lightCol;
+
+      // Soft ambient from top
+      col += vec3(0.01, 0.01, 0.012) * (1.0 - uv.y) * brightness;
 
       // Edge shadow / bezel
-      float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
       float edgeShadow = smoothstep(0.0, 0.04, edgeDist);
       col *= 0.85 + 0.15 * edgeShadow;
 
-      // Corner wear
+      // Corner wear — lighter in corners
       float cornerWear = smoothstep(0.0, 0.08, edgeDist);
-      col = mix(col + 0.04, col, cornerWear);
+      col = mix(col + 0.04 * u_wear, col, cornerWear);
 
       // Flash on key press
       col += u_flash * vec3(0.08, 0.12, 0.10);
 
-      // Subtle time variation
+      // Breathing
       col += sin(u_time * 0.5) * 0.003;
+
+      // Overall TOD brightness
+      col *= 0.7 + brightness * 0.3;
 
       gl_FragColor = vec4(col, 1.0);
     }
@@ -154,6 +233,13 @@
     const uRes = gl.getUniformLocation(prog, 'u_resolution');
     const uMouse = gl.getUniformLocation(prog, 'u_mouse');
     const uFlash = gl.getUniformLocation(prog, 'u_flash');
+    const uTod = gl.getUniformLocation(prog, 'u_tod');
+    const uDust = gl.getUniformLocation(prog, 'u_dust');
+    const uWear = gl.getUniformLocation(prog, 'u_wear');
+    const uPatina = gl.getUniformLocation(prog, 'u_patina');
+    const uLight = gl.getUniformLocation(prog, 'u_light');
+    const uGrain = gl.getUniformLocation(prog, 'u_grain');
+    const uScratches = gl.getUniformLocation(prog, 'u_scratches');
 
     function resize() {
       canvas.width = window.innerWidth;
@@ -174,6 +260,13 @@
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouseX, canvas.height - mouseY);
       gl.uniform1f(uFlash, flash);
+      gl.uniform1f(uTod, getTod());
+      gl.uniform1f(uDust, visualConfig.dust);
+      gl.uniform1f(uWear, visualConfig.wear);
+      gl.uniform1f(uPatina, visualConfig.patina);
+      gl.uniform1f(uLight, visualConfig.light);
+      gl.uniform1f(uGrain, visualConfig.grain);
+      gl.uniform1f(uScratches, visualConfig.scratches);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       requestAnimationFrame(render);
     }
@@ -495,6 +588,144 @@
     connectMidi();
   }
 
+  // ── Effect Switches (Sustain / Vibrato / Portamento) ──────────────
+  const fxSustain = document.getElementById('fx-sustain');
+  const fxVibrato = document.getElementById('fx-vibrato');
+  const fxPortamento = document.getElementById('fx-portamento');
+
+  // Restore saved state
+  const savedFx = JSON.parse(localStorage.getItem('yamabruh_fx') || '{}');
+  let fxState = { sustain: false, vibrato: false, portamento: false, ...savedFx };
+
+  function applyFxState() {
+    fxSustain.classList.toggle('active', fxState.sustain);
+    fxVibrato.classList.toggle('active', fxState.vibrato);
+    fxPortamento.classList.toggle('active', fxState.portamento);
+    window.synth.setSustain(fxState.sustain, 3.0);
+    window.synth.setVibrato(fxState.vibrato, 5.5, 0.004);
+    window.synth.setPortamento(fxState.portamento, 0.08);
+    localStorage.setItem('yamabruh_fx', JSON.stringify(fxState));
+  }
+
+  fxSustain.addEventListener('click', () => {
+    fxState.sustain = !fxState.sustain;
+    applyFxState();
+    document.getElementById('lcd-info').textContent = 'SUSTAIN ' + (fxState.sustain ? 'ON' : 'OFF');
+  });
+
+  fxVibrato.addEventListener('click', () => {
+    fxState.vibrato = !fxState.vibrato;
+    applyFxState();
+    document.getElementById('lcd-info').textContent = 'VIBRATO ' + (fxState.vibrato ? 'ON' : 'OFF');
+  });
+
+  fxPortamento.addEventListener('click', () => {
+    fxState.portamento = !fxState.portamento;
+    applyFxState();
+    document.getElementById('lcd-info').textContent = 'PORTAMENTO ' + (fxState.portamento ? 'ON' : 'OFF');
+  });
+
+  // Apply on init
+  applyFxState();
+
+  // ── Drum Engine Init + Rhythm UI ──────────────────────────────────
+  await window.drums.init(window.synth.ctx);
+
+  const savedDrums = JSON.parse(localStorage.getItem('yamabruh_drums') || '{}');
+  let drumPattern = savedDrums.pattern || 0;
+  let drumBpm = savedDrums.bpm || 120;
+
+  window.drums.setPattern(drumPattern);
+  window.drums.setBpm(drumBpm);
+
+  const rhythmDisplay = document.getElementById('rhythm-display');
+  const tempoDisplay = document.getElementById('tempo-display');
+  const startBtn = document.getElementById('rhythm-start');
+  const fillBtn = document.getElementById('rhythm-fill');
+  const stepDots = document.querySelectorAll('#rhythm-steps .step-dot');
+
+  function updateRhythmDisplay() {
+    const num = String(drumPattern + 1).padStart(2, '0');
+    rhythmDisplay.textContent = num + ' ' + window.drums.getPatternName(drumPattern);
+    tempoDisplay.textContent = drumBpm;
+  }
+  updateRhythmDisplay();
+
+  function saveDrumState() {
+    localStorage.setItem('yamabruh_drums', JSON.stringify({ pattern: drumPattern, bpm: drumBpm }));
+  }
+
+  document.getElementById('rhythm-prev').addEventListener('click', () => {
+    drumPattern = (drumPattern - 1 + window.drums.getPatternCount()) % window.drums.getPatternCount();
+    window.drums.setPattern(drumPattern);
+    updateRhythmDisplay();
+    saveDrumState();
+  });
+
+  document.getElementById('rhythm-next').addEventListener('click', () => {
+    drumPattern = (drumPattern + 1) % window.drums.getPatternCount();
+    window.drums.setPattern(drumPattern);
+    updateRhythmDisplay();
+    saveDrumState();
+  });
+
+  startBtn.addEventListener('click', () => {
+    if (window.drums.playing) {
+      window.drums.stop();
+      startBtn.textContent = 'START';
+      startBtn.classList.remove('active');
+      // Clear step dots
+      stepDots.forEach(d => { d.classList.remove('active', 'beat'); });
+      document.getElementById('lcd-info').textContent = 'RHYTHM STOP';
+    } else {
+      window.synth.ensureContext();
+      window.drums.start();
+      startBtn.textContent = 'STOP';
+      startBtn.classList.add('active');
+      document.getElementById('lcd-info').textContent = 'RHYTHM: ' + window.drums.getPatternName(drumPattern);
+    }
+  });
+
+  fillBtn.addEventListener('click', () => {
+    if (window.drums.playing) {
+      window.drums.fill();
+      document.getElementById('lcd-info').textContent = 'FILL IN';
+    }
+  });
+
+  document.getElementById('tempo-down').addEventListener('click', () => {
+    drumBpm = Math.max(60, drumBpm - 4);
+    window.drums.setBpm(drumBpm);
+    tempoDisplay.textContent = drumBpm;
+    saveDrumState();
+  });
+
+  document.getElementById('tempo-up').addEventListener('click', () => {
+    drumBpm = Math.min(240, drumBpm + 4);
+    window.drums.setBpm(drumBpm);
+    tempoDisplay.textContent = drumBpm;
+    saveDrumState();
+  });
+
+  // Step indicator callback
+  window.drums.onStep = (step, totalSteps) => {
+    stepDots.forEach((dot, i) => {
+      if (i >= totalSteps) {
+        dot.classList.remove('active', 'beat');
+        return;
+      }
+      if (i === step) {
+        dot.classList.add(i % 4 === 0 ? 'beat' : 'active');
+      } else {
+        dot.classList.remove('active', 'beat');
+      }
+    });
+  };
+
+  window.drums.onStop = () => {
+    stepDots.forEach(d => { d.classList.remove('active', 'beat'); });
+  };
+
   // ── Computer Keyboard → Piano + Patch Control ─────────────────────
   const qwertyMap = {
     'a': 54, 'w': 55, 's': 56, 'e': 57, 'd': 58,
@@ -601,5 +832,73 @@
     window.synth._presetCache.delete(currentPreset);
     loadTweakFromPreset();
     window.synth._sendPreset();
+  });
+
+  // ── Visual Config UI ──────────────────────────────────────────────
+  const visualToggle = document.getElementById('visual-toggle');
+  const visualBody = document.getElementById('visual-body');
+  const visualReset = document.getElementById('visual-reset');
+  const todModeBtn = document.getElementById('tod-mode-btn');
+  const todSlider = document.getElementById('vis-tod');
+
+  visualToggle.addEventListener('click', () => {
+    const open = visualBody.classList.toggle('open');
+    visualToggle.classList.toggle('open', open);
+    visualToggle.innerHTML = 'VISUAL CONFIG ' + (open ? '&#9650;' : '&#9660;');
+  });
+
+  const visIds = ['vis-dust','vis-wear','vis-patina','vis-light','vis-grain','vis-scratches'];
+  const visKeys = ['dust','wear','patina','light','grain','scratches'];
+
+  visIds.forEach((id, i) => {
+    const slider = document.getElementById(id);
+    const val = document.getElementById(id + '-val');
+    slider.value = visualConfig[visKeys[i]];
+    val.textContent = Number(visualConfig[visKeys[i]]).toFixed(2);
+    slider.addEventListener('input', () => {
+      visualConfig[visKeys[i]] = parseFloat(slider.value);
+      val.textContent = parseFloat(slider.value).toFixed(2);
+      localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+    });
+  });
+
+  function updateTodUI() {
+    const isAuto = visualConfig.todMode === 'auto';
+    todModeBtn.textContent = isAuto ? 'AUTO' : 'MANUAL';
+    todModeBtn.classList.toggle('manual', !isAuto);
+    todSlider.disabled = isAuto;
+    document.getElementById('vis-tod-val').textContent = isAuto
+      ? 'auto (' + getTod().toFixed(1) + 'h)'
+      : visualConfig.todManual.toFixed(1) + 'h';
+  }
+
+  todModeBtn.addEventListener('click', () => {
+    visualConfig.todMode = visualConfig.todMode === 'auto' ? 'manual' : 'auto';
+    if (visualConfig.todMode === 'manual') {
+      visualConfig.todManual = getTod();
+      todSlider.value = visualConfig.todManual;
+    }
+    updateTodUI();
+    localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+  });
+
+  todSlider.value = visualConfig.todManual;
+  todSlider.addEventListener('input', () => {
+    visualConfig.todManual = parseFloat(todSlider.value);
+    updateTodUI();
+    localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+  });
+
+  updateTodUI();
+
+  visualReset.addEventListener('click', () => {
+    Object.assign(visualConfig, { ...DEFAULT_VISUAL });
+    localStorage.removeItem('yamabruh_visual');
+    visIds.forEach((id, i) => {
+      document.getElementById(id).value = DEFAULT_VISUAL[visKeys[i]];
+      document.getElementById(id + '-val').textContent = DEFAULT_VISUAL[visKeys[i]].toFixed(2);
+    });
+    todSlider.value = DEFAULT_VISUAL.todManual;
+    updateTodUI();
   });
 })();
