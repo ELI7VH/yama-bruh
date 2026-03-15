@@ -22,5 +22,5 @@ jobs:
               "repo": "ELI7VH/yama-bruh",
               "ref": "${{ github.sha }}",
               "source": "www/",
-              "domain": "yamabruh.lucianlabs.ca"
+              "domain": "yama-bruh.lucianlabs.ca"
             }'
