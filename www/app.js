@@ -4,12 +4,29 @@
   // ── State ─────────────────────────────────────────────────────────
   let currentPreset = 0;
   let presetInput = '';
+  let presetTimeout = null;
   let flash = 0;
   let playingSources = new Map();
 
   // ── Init synth ────────────────────────────────────────────────────
   await window.synth.init();
-  updateLCD();
+
+  // ── Build Voice Bank ──────────────────────────────────────────────
+  const vbGrid = document.getElementById('voice-bank-grid');
+  PRESET_NAMES.forEach((name, i) => {
+    const entry = document.createElement('div');
+    entry.className = 'vb-entry' + (i === 0 ? ' active' : '');
+    entry.dataset.preset = i;
+    const num = String(i).padStart(2, '0');
+    entry.innerHTML = `<span class="vb-num">${num}</span>${name}`;
+    entry.addEventListener('click', () => {
+      selectPreset(i);
+      window.synth.playClick();
+    });
+    vbGrid.appendChild(entry);
+  });
+
+  updateDisplay();
 
   // ── GLSL Background ──────────────────────────────────────────────
   const canvas = document.getElementById('bg-canvas');
@@ -57,59 +74,50 @@
     void main() {
       vec2 uv = gl_FragCoord.xy / u_resolution;
 
-      // Base aged plastic — near black with warm tint
-      vec3 col = vec3(0.14, 0.13, 0.12);
+      // Base aged plastic — dark charcoal
+      vec3 col = vec3(0.12, 0.12, 0.11);
 
-      // Large-scale discoloration / yellowing stains
+      // Large-scale discoloration
       float stain = fbm(uv * 3.0 + 42.0);
-      col += vec3(stain * 0.06, stain * 0.04, -stain * 0.02);
+      col += vec3(stain * 0.04, stain * 0.03, stain * 0.01);
 
-      // Darker wear zones (where hands would grip)
+      // Darker wear zones
       float wear = fbm(uv * vec2(2.0, 5.0) + 100.0);
-      col -= wear * 0.04;
+      col -= wear * 0.03;
 
       // Micro-texture: plastic grain
-      float grain = noise(uv * 350.0);
-      col += (grain - 0.5) * 0.035;
+      float grain = noise(uv * 400.0);
+      col += (grain - 0.5) * 0.025;
 
-      // Scratches — horizontal bias (subtle on dark surface)
+      // Scratches — horizontal bias
       for (int i = 0; i < 4; i++) {
         float fi = float(i);
         vec2 suv = uv * vec2(0.8, 50.0 + fi * 12.0) + vec2(fi * 17.3, fi * 31.7);
         float s = noise(suv);
-        float scratch = smoothstep(0.49, 0.5, s) * 0.03;
+        float scratch = smoothstep(0.49, 0.5, s) * 0.025;
         col += scratch;
       }
 
-      // Deep scratches — fewer, subtle
-      for (int i = 0; i < 2; i++) {
-        float fi = float(i);
-        vec2 suv = uv * vec2(1.0, 90.0) + vec2(fi * 53.1, fi * 97.3);
-        float s = noise(suv);
-        float scratch = smoothstep(0.495, 0.5, s) * 0.05;
-        col += scratch;
-      }
-
-      // Specular highlight from mouse — plastic sheen on dark surface
+      // Specular highlight from mouse
       vec2 mUV = u_mouse / u_resolution;
       float highlight = 1.0 - distance(uv, mUV);
-      highlight = pow(max(highlight, 0.0), 4.0) * 0.12;
+      highlight = pow(max(highlight, 0.0), 4.0) * 0.10;
       col += highlight;
 
-      // Edge shadow / bezel illusion
+      // Edge shadow / bezel
       float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
       float edgeShadow = smoothstep(0.0, 0.04, edgeDist);
       col *= 0.85 + 0.15 * edgeShadow;
 
-      // Corner wear — lighter at edges
+      // Corner wear
       float cornerWear = smoothstep(0.0, 0.08, edgeDist);
-      col = mix(col + 0.06, col, cornerWear);
+      col = mix(col + 0.04, col, cornerWear);
 
-      // Flash response on key press
-      col += u_flash * vec3(0.12, 0.10, 0.08);
+      // Flash on key press
+      col += u_flash * vec3(0.08, 0.12, 0.10);
 
-      // Subtle time-based variation (breathing light)
-      col += sin(u_time * 0.5) * 0.005;
+      // Subtle time variation
+      col += sin(u_time * 0.5) * 0.003;
 
       gl_FragColor = vec4(col, 1.0);
     }
@@ -119,9 +127,6 @@
     const s = gl.createShader(type);
     gl.shaderSource(s, src);
     gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-      console.error('Shader error:', gl.getShaderInfoLog(s));
-    }
     return s;
   }
 
@@ -162,7 +167,7 @@
     });
 
     function render(t) {
-      flash *= 0.92; // decay
+      flash *= 0.92;
       gl.uniform1f(uTime, t * 0.001);
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouseX, canvas.height - mouseY);
@@ -175,25 +180,18 @@
 
   // ── Build Keyboard ────────────────────────────────────────────────
   const keyboard = document.getElementById('keyboard');
-  // Two octaves: C4 to B5 (MIDI 60-83)
   const START_NOTE = 54; // F#3
   const END_NOTE = 78;   // F#5
-  const blackPattern = [0,1,0,1,0,0,1,0,1,0,1,0]; // C C# D D# E F F# G G# A A# B
+  const blackPattern = [0,1,0,1,0,0,1,0,1,0,1,0];
 
-  // Build white keys first, then black keys on top
   const whiteNotes = [];
   const blackNotes = [];
 
   for (let n = START_NOTE; n <= END_NOTE; n++) {
-    const noteInOctave = n % 12;
-    if (blackPattern[noteInOctave]) {
-      blackNotes.push(n);
-    } else {
-      whiteNotes.push(n);
-    }
+    if (blackPattern[n % 12]) blackNotes.push(n);
+    else whiteNotes.push(n);
   }
 
-  // Create white keys
   whiteNotes.forEach(n => {
     const key = document.createElement('div');
     key.className = 'key-white';
@@ -201,18 +199,13 @@
     keyboard.appendChild(key);
   });
 
-  // Create black keys positioned between whites
   const whiteKeyWidth = 100 / whiteNotes.length;
   blackNotes.forEach(n => {
     const key = document.createElement('div');
     key.className = 'key-black';
     key.dataset.midi = n;
-
-    // Position: find which white key this black key is after
     const prevWhite = whiteNotes.filter(w => w < n).length;
-    const leftPos = prevWhite * whiteKeyWidth - whiteKeyWidth * 0.18;
-    key.style.left = leftPos + '%';
-
+    key.style.left = (prevWhite * whiteKeyWidth - whiteKeyWidth * 0.18) + '%';
     keyboard.appendChild(key);
   });
 
@@ -230,7 +223,7 @@
   function keyUp(el, midiNote) {
     el.classList.remove('active');
     const noteId = keyNoteIds.get(midiNote);
-    if (noteId) {
+    if (noteId !== undefined) {
       window.synth.stopNote(noteId);
       keyNoteIds.delete(midiNote);
     }
@@ -261,7 +254,6 @@
   const randomContainer = document.getElementById('random-ids');
   const customContainer = document.getElementById('custom-ids');
 
-  // Generate random IDs
   function generateId() {
     const chars = 'abcdef0123456789';
     let id = '';
@@ -284,7 +276,6 @@
     randomContainer.appendChild(row);
   });
 
-  // Custom IDs from localStorage
   const savedCustom = JSON.parse(localStorage.getItem('yamabruh_custom_ids') || '["","","","",""]');
 
   for (let i = 0; i < 5; i++) {
@@ -297,7 +288,6 @@
     customContainer.appendChild(row);
   }
 
-  // Save custom IDs on input
   document.querySelectorAll('.custom-input').forEach(input => {
     input.addEventListener('input', () => {
       const idx = parseInt(input.dataset.ci);
@@ -313,18 +303,15 @@
 
     flash = 1.0;
 
-    // Determine which ID to use
     let idStr = '';
     if (playBtn.dataset.rid !== undefined) {
       idStr = randomIds[parseInt(playBtn.dataset.rid)];
     } else if (playBtn.dataset.cid !== undefined) {
-      const idx = parseInt(playBtn.dataset.cid);
-      idStr = savedCustom[idx] || '';
+      idStr = savedCustom[parseInt(playBtn.dataset.cid)] || '';
     }
 
     if (!idStr) return;
 
-    // Stop any existing playback for this button
     const key = playBtn.dataset.rid || 'c' + playBtn.dataset.cid;
     if (playingSources.has(key)) {
       try { playingSources.get(key).stop(); } catch (e) {}
@@ -344,56 +331,66 @@
     playingSources.set(key, source);
   });
 
-  // ── Keypad Logic ──────────────────────────────────────────────────
-  function updateLCD() {
-    const num = String(currentPreset + 1).padStart(2, '0');
-    document.getElementById('lcd-preset-num').textContent = num;
-    document.getElementById('lcd-preset-name').textContent = window.synth.getPresetName(currentPreset);
+  // ── Preset Logic ──────────────────────────────────────────────────
+  function updateDisplay() {
+    const num = String(currentPreset).padStart(2, '0');
+    document.getElementById('seg-digits').textContent = num;
+    document.getElementById('preset-readout').textContent = window.synth.getPresetName(currentPreset);
     window.synth.currentPreset = currentPreset;
+
+    // Update voice bank highlight
+    const prev = vbGrid.querySelector('.vb-entry.active');
+    if (prev) prev.classList.remove('active');
+    const entry = vbGrid.querySelector(`[data-preset="${currentPreset}"]`);
+    if (entry) {
+      entry.classList.add('active');
+      // Scroll into view if needed
+      const gridRect = vbGrid.getBoundingClientRect();
+      const entryRect = entry.getBoundingClientRect();
+      if (entryRect.top < gridRect.top || entryRect.bottom > gridRect.bottom) {
+        entry.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
   }
 
   function selectPreset(num) {
     currentPreset = Math.max(0, Math.min(98, num));
-    updateLCD();
+    updateDisplay();
+    window.synth._sendPreset();
+    document.getElementById('lcd-info').textContent = 'READY';
   }
 
-  document.querySelectorAll('.kp-btn').forEach(btn => {
-    btn.addEventListener('pointerdown', () => {
-      window.synth.playClick();
-      flash = 0.6;
+  function enterDigit(d) {
+    clearTimeout(presetTimeout);
+    window.synth.playClick();
+    flash = 0.6;
 
-      const key = btn.dataset.key;
+    presetInput += d;
 
-      if (key >= '0' && key <= '9') {
-        presetInput += key;
-        if (presetInput.length >= 2) {
-          const num = parseInt(presetInput);
-          selectPreset(Math.max(0, num - 1));
+    if (presetInput.length >= 2) {
+      const num = parseInt(presetInput);
+      selectPreset(num);
+      presetInput = '';
+    } else {
+      document.getElementById('lcd-info').textContent = presetInput + '_';
+      // Auto-complete after 1.5s
+      presetTimeout = setTimeout(() => {
+        if (presetInput.length === 1) {
+          selectPreset(parseInt(presetInput));
           presetInput = '';
-        } else {
-          document.getElementById('lcd-info').textContent = 'INPUT: ' + presetInput + '_';
         }
-      } else if (key === '+') {
-        presetInput = '';
-        selectPreset(currentPreset + 1);
-      } else if (key === '-') {
-        presetInput = '';
-        selectPreset(currentPreset - 1);
-      } else if (key === 'ok') {
-        if (presetInput.length > 0) {
-          const num = parseInt(presetInput);
-          selectPreset(Math.max(0, num - 1));
-        }
-        presetInput = '';
-        document.getElementById('lcd-info').textContent = 'READY';
-      } else if (key === 'clr') {
-        presetInput = '';
-        document.getElementById('lcd-info').textContent = 'READY';
-      }
+      }, 1500);
+    }
+  }
+
+  // Voice selector buttons
+  document.querySelectorAll('.sel-btn').forEach(btn => {
+    btn.addEventListener('pointerdown', () => {
+      enterDigit(btn.dataset.num);
     });
   });
 
-  // ── MIDI Button + Device Select ─────────────────────────────────────
+  // ── MIDI Button + Device Select ───────────────────────────────────
   const midiBtn = document.getElementById('midi-btn');
   const midiSelect = document.getElementById('midi-select');
 
@@ -417,7 +414,6 @@
       midiSelect.appendChild(opt);
     });
 
-    // Auto-select if only one device
     if (inputs.length === 1) {
       midiSelect.value = inputs[0].id;
       window.midiManager.selectInput(inputs[0].id).then(() => {
@@ -461,7 +457,7 @@
     }
   });
 
-  // ── Computer Keyboard → Piano ─────────────────────────────────────
+  // ── Computer Keyboard → Piano + Patch Control ─────────────────────
   const qwertyMap = {
     'a': 54, 'w': 55, 's': 56, 'e': 57, 'd': 58,
     'f': 59, 't': 60, 'g': 61, 'y': 62, 'h': 63,
@@ -472,7 +468,36 @@
   const activeQwerty = new Set();
 
   document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+    // Arrow keys for patch change
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      presetInput = '';
+      clearTimeout(presetTimeout);
+      selectPreset(currentPreset + 1);
+      window.synth.playClick();
+      flash = 0.4;
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      presetInput = '';
+      clearTimeout(presetTimeout);
+      selectPreset(currentPreset - 1);
+      window.synth.playClick();
+      flash = 0.4;
+      return;
+    }
+
+    // Number keys for direct patch entry
+    if (e.key >= '0' && e.key <= '9' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      enterDigit(e.key);
+      return;
+    }
+
+    // QWERTY piano
     const midi = qwertyMap[e.key.toLowerCase()];
     if (midi !== undefined && !activeQwerty.has(e.key)) {
       activeQwerty.add(e.key);
@@ -482,7 +507,7 @@
   });
 
   document.addEventListener('keyup', e => {
-    if (e.target.tagName === 'INPUT') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
     const midi = qwertyMap[e.key.toLowerCase()];
     if (midi !== undefined) {
       activeQwerty.delete(e.key);
