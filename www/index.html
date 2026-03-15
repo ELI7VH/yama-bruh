@@ -44,15 +44,20 @@
     <!-- Horizontal case grooves (between voice bank and controls) -->
     <div class="case-grooves"></div>
 
-    <!-- Controls: Display + Voice Selector -->
+    <!-- Controls: Display + Effects + Voice Selector -->
     <div class="controls-row">
       <div class="display-unit">
         <div class="display-label">VOICE / TEMPO</div>
         <div class="seg-housing">
           <div class="seg-digits" id="seg-digits">00</div>
         </div>
-        <div class="preset-readout" id="preset-readout">Grand Piano</div>
-        <div class="display-status" id="lcd-info">READY</div>
+        <div class="display-status" id="lcd-info"></div>
+      </div>
+
+      <div class="effects-col">
+        <div class="sel-cell"><span class="sel-label">SUSTAIN</span><button class="sel-btn fx-sel-btn" id="fx-sustain"></button></div>
+        <div class="sel-cell"><span class="sel-label">VIBRATO</span><button class="sel-btn fx-sel-btn" id="fx-vibrato"></button></div>
+        <div class="sel-cell"><span class="sel-label">PORTAMENTO</span><button class="sel-btn fx-sel-btn" id="fx-portamento"></button></div>
       </div>
 
       <div class="voice-selector">
@@ -74,13 +79,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Effect Switches (PSS-470 style) -->
-    <div class="effects-row">
-      <button class="fx-btn" id="fx-sustain">SUSTAIN</button>
-      <button class="fx-btn" id="fx-vibrato">VIBRATO</button>
-      <button class="fx-btn" id="fx-portamento">PORTAMENTO</button>
     </div>
 
     <!-- Rhythm Section (PSS-170 style) -->

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAMA-BRUH — Ringtones</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- GLSL background canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div id="app">
+    <!-- Air vents -->
+    <div class="air-vents">
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+      <div class="vent-slat"></div>
+    </div>
+
+    <!-- Header plate -->
+    <div class="plate-header">
+      <div class="brand-group">
+        <a href="index.html" class="brand" style="text-decoration:none;color:inherit;">YAMA-BRUH</a>
+        <div class="brand-sub">Ringtones</div>
+      </div>
+      <div class="model-text">YB-99FM</div>
+    </div>
+
+    <!-- Horizontal case grooves -->
+    <div class="case-grooves"></div>
+
+    <!-- Ringtone IDs -->
+    <div class="id-section">
+      <div class="panel-label">RANDOM IDs</div>
+      <div id="random-ids" class="id-list"></div>
+      <div class="panel-label">CUSTOM IDs</div>
+      <div id="custom-ids" class="id-list"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <a href="https://lucianlabs.ca" class="footer-link" target="_blank" rel="noopener">lucianlabs.ca</a>
+      <a href="index.html" class="footer-link">SYNTH</a>
+    </footer>
+  </div>
+
+  <script src="synth.js"></script>
+  <script src="drums.js"></script>
+  <script src="midi.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

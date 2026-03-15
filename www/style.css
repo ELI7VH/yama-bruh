@@ -443,52 +443,38 @@ html, body {
   opacity: 0;
 }
 
-/* ── Effect Switches (PSS-470 style) ──────────────────────────────── */
-.effects-row {
+/* ── Effects Column (left of voice selector) ─────────────────────── */
+.effects-col {
   display: flex;
-  gap: 8px;
-  margin: 0 14px 16px;
-  padding: 8px 12px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid #2a2a2a;
-  border-radius: 3px;
-  box-shadow:
-    inset 0 2px 5px rgba(0,0,0,0.4),
-    0 1px 0 rgba(255,255,255,0.02);
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  align-self: flex-end;
 }
 
-.fx-btn {
-  flex: 1;
-  padding: 8px 6px;
-  border: 1px solid #333;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
-  color: #558877;
-  font-family: 'Courier New', monospace;
-  font-size: 9px;
-  font-weight: bold;
-  letter-spacing: 1.5px;
-  cursor: pointer;
-  text-align: center;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-  box-shadow:
-    0 2px 4px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.04);
+.effects-col .sel-label {
+  font-size: 7px;
+  letter-spacing: 0.5px;
 }
 
-.fx-btn:hover {
-  background: linear-gradient(180deg, #333 0%, #222 100%);
-  color: #77aa99;
-}
-
-.fx-btn.active {
-  background: linear-gradient(180deg, #1a5038 0%, #0d3020 100%);
-  color: #77ffdd;
-  border-color: #22ccaa;
+/* Active state for effect toggle buttons (green → orange/lit) */
+.fx-sel-btn.active {
+  background:
+    linear-gradient(180deg,
+      #ffcc44 0%,
+      #dd9922 12%,
+      #cc8818 40%,
+      #bb7710 65%,
+      #aa6608 88%,
+      #995500 100%
+    );
   box-shadow:
-    0 0 8px rgba(34,204,170,0.2),
-    0 2px 4px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    inset 0 2px 0 rgba(255,255,255,0.25),
+    inset 2px 0 0 rgba(255,255,255,0.12),
+    inset 0 -2px 0 rgba(0,0,0,0.25),
+    inset -2px 0 0 rgba(0,0,0,0.15),
+    0 0 8px rgba(255,180,40,0.3),
+    0 3px 4px rgba(0,0,0,0.5);
 }
 
 /* ── ID Sections ───────────────────────────────────────────────────── */
@@ -1217,6 +1203,31 @@ html, body {
   background: #ff4444;
   border-color: #ff4444;
   box-shadow: 0 0 6px rgba(255,68,68,0.4);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 24px 14px 0;
+  padding: 12px 0 0;
+  border-top: 1px solid #2a2a2a;
+}
+
+.footer-link {
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: #558877;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.footer-link:hover {
+  color: #22ccaa;
 }
 
 /* ── Responsiveness ────────────────────────────────────────────────── */

@@ -1,8 +1,10 @@
-#![no_std]
+#![cfg_attr(target_arch = "wasm32", no_std)]
 
+#[cfg(target_arch = "wasm32")]
 use core::panic::PanicInfo;
 use libm::{powf, sinf};
 
+#[cfg(target_arch = "wasm32")]
 #[panic_handler]
 fn panic(_: &PanicInfo) -> ! {
     loop {}
@@ -52,7 +54,7 @@ fn midi_to_freq(note: f32) -> f32 {
 // ── 99 Presets ────────────────────────────────────────────────────────
 // [carrier_ratio, mod_ratio, mod_index, attack, decay, sustain, release, feedback]
 // Hand-tuned per preset for maximum timbral variety
-fn get_preset_data(index: u32) -> [f32; 8] {
+pub fn get_preset_data(index: u32) -> [f32; 8] {
     match index {
         // ── 00-09: Piano / Keys ──────────────────────────────────────
         0  => [1.0,  1.0,  1.8,  0.001, 0.8,  0.15, 0.4,  0.0  ], // Grand Piano

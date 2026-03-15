@@ -5,10 +5,31 @@ edition = "2021"
 description = "WebAssembly 2-op FM synth ringtone generator"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 libm = "0.2"
+
+[[bin]]
+name = "yambruh-test"
+path = "src/native.rs"
+
+[[bin]]
+name = "sinetest"
+path = "src/sinetest.rs"
+
+[[bin]]
+name = "enginetest"
+path = "src/enginetest.rs"
+
+[[bin]]
+name = "miditest"
+path = "src/miditest.rs"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+cpal = "0.15"
+crossterm = "0.28"
+midir = "0.10"
 
 [profile.release]
 opt-level = "s"

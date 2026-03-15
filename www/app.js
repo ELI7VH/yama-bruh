@@ -25,7 +25,7 @@
 
   // ── Build Voice Bank ──────────────────────────────────────────────
   const vbGrid = document.getElementById('voice-bank-grid');
-  PRESET_NAMES.forEach((name, i) => {
+  if (vbGrid) PRESET_NAMES.forEach((name, i) => {
     const entry = document.createElement('div');
     entry.className = 'vb-entry' + (i === 0 ? ' active' : '');
     entry.dataset.preset = i;
@@ -275,42 +275,11 @@
 
   // ── Build Keyboard ────────────────────────────────────────────────
   const keyboard = document.getElementById('keyboard');
-  const START_NOTE = 54; // F#3
-  const END_NOTE = 78;   // F#5
-  const blackPattern = [0,1,0,1,0,0,1,0,1,0,1,0];
-
-  const whiteNotes = [];
-  const blackNotes = [];
-
-  for (let n = START_NOTE; n <= END_NOTE; n++) {
-    if (blackPattern[n % 12]) blackNotes.push(n);
-    else whiteNotes.push(n);
-  }
-
-  whiteNotes.forEach(n => {
-    const key = document.createElement('div');
-    key.className = 'key-white';
-    key.dataset.midi = n;
-    keyboard.appendChild(key);
-  });
-
-  const whiteKeyWidth = 100 / whiteNotes.length;
-  blackNotes.forEach(n => {
-    const key = document.createElement('div');
-    key.className = 'key-black';
-    key.dataset.midi = n;
-    const prevWhite = whiteNotes.filter(w => w < n).length;
-    key.style.left = (prevWhite * whiteKeyWidth - whiteKeyWidth * 0.18) + '%';
-    keyboard.appendChild(key);
-  });
-
-  // Keyboard interaction
   let keyNoteIds = new Map();
 
   function keyDown(el, midiNote) {
     if (keyNoteIds.has(midiNote)) return;
     el.classList.add('active');
-    flash = 1.0;
     const noteId = window.synth.playNote(midiNote, 0.7);
     keyNoteIds.set(midiNote, noteId);
   }
@@ -324,79 +293,110 @@
     }
   }
 
-  keyboard.addEventListener('pointerdown', e => {
-    const el = e.target;
-    const midi = parseInt(el.dataset.midi);
-    if (!isNaN(midi)) {
-      el.setPointerCapture(e.pointerId);
-      keyDown(el, midi);
+  if (keyboard) {
+    const START_NOTE = 54; // F#3
+    const END_NOTE = 78;   // F#5
+    const blackPattern = [0,1,0,1,0,0,1,0,1,0,1,0];
+
+    const whiteNotes = [];
+    const blackNotes = [];
+
+    for (let n = START_NOTE; n <= END_NOTE; n++) {
+      if (blackPattern[n % 12]) blackNotes.push(n);
+      else whiteNotes.push(n);
     }
-  });
 
-  keyboard.addEventListener('pointerup', e => {
-    const el = e.target;
-    const midi = parseInt(el.dataset.midi);
-    if (!isNaN(midi)) keyUp(el, midi);
-  });
+    whiteNotes.forEach(n => {
+      const key = document.createElement('div');
+      key.className = 'key-white';
+      key.dataset.midi = n;
+      keyboard.appendChild(key);
+    });
 
-  keyboard.addEventListener('pointerleave', e => {
-    const el = e.target;
-    const midi = parseInt(el.dataset.midi);
-    if (!isNaN(midi)) keyUp(el, midi);
-  });
+    const whiteKeyWidth = 100 / whiteNotes.length;
+    blackNotes.forEach(n => {
+      const key = document.createElement('div');
+      key.className = 'key-black';
+      key.dataset.midi = n;
+      const prevWhite = whiteNotes.filter(w => w < n).length;
+      key.style.left = (prevWhite * whiteKeyWidth - whiteKeyWidth * 0.18) + '%';
+      keyboard.appendChild(key);
+    });
 
-  // ── Build ID Sections ─────────────────────────────────────────────
+    keyboard.addEventListener('pointerdown', e => {
+      const el = e.target;
+      const midi = parseInt(el.dataset.midi);
+      if (!isNaN(midi)) {
+        el.setPointerCapture(e.pointerId);
+        keyDown(el, midi);
+      }
+    });
+
+    keyboard.addEventListener('pointerup', e => {
+      const el = e.target;
+      const midi = parseInt(el.dataset.midi);
+      if (!isNaN(midi)) keyUp(el, midi);
+    });
+
+    keyboard.addEventListener('pointerleave', e => {
+      const el = e.target;
+      const midi = parseInt(el.dataset.midi);
+      if (!isNaN(midi)) keyUp(el, midi);
+    });
+  }
+
+  // ── Build ID Sections (ringtones page only) ─────────────────────
   const randomContainer = document.getElementById('random-ids');
   const customContainer = document.getElementById('custom-ids');
-
-  function generateId() {
-    const chars = 'abcdef0123456789';
-    let id = '';
-    for (let i = 0; i < 12; i++) {
-      id += chars[Math.floor(Math.random() * chars.length)];
-      if (i === 3 || i === 7) id += '-';
-    }
-    return id;
-  }
-
-  const randomIds = Array.from({ length: 5 }, generateId);
-
-  randomIds.forEach((id, i) => {
-    const row = document.createElement('div');
-    row.className = 'id-row';
-    row.innerHTML = `
-      <input class="id-field" type="text" value="${id}" readonly>
-      <button class="play-btn" data-rid="${i}">&#9654;</button>
-    `;
-    randomContainer.appendChild(row);
-  });
-
+  const randomIds = [];
   const savedCustom = JSON.parse(localStorage.getItem('yamabruh_custom_ids') || '["","","","",""]');
 
-  for (let i = 0; i < 5; i++) {
-    const row = document.createElement('div');
-    row.className = 'id-row';
-    row.innerHTML = `
-      <input class="id-field custom-input" type="text" value="${savedCustom[i] || ''}" placeholder="enter id..." data-ci="${i}">
-      <button class="play-btn" data-cid="${i}">&#9654;</button>
-    `;
-    customContainer.appendChild(row);
-  }
+  if (randomContainer && customContainer) {
+    function generateId() {
+      const chars = 'abcdef0123456789';
+      let id = '';
+      for (let i = 0; i < 12; i++) {
+        id += chars[Math.floor(Math.random() * chars.length)];
+        if (i === 3 || i === 7) id += '-';
+      }
+      return id;
+    }
 
-  document.querySelectorAll('.custom-input').forEach(input => {
-    input.addEventListener('input', () => {
-      const idx = parseInt(input.dataset.ci);
-      savedCustom[idx] = input.value;
-      localStorage.setItem('yamabruh_custom_ids', JSON.stringify(savedCustom));
+    randomIds.push(...Array.from({ length: 5 }, generateId));
+
+    randomIds.forEach((id, i) => {
+      const row = document.createElement('div');
+      row.className = 'id-row';
+      row.innerHTML = `
+        <input class="id-field" type="text" value="${id}" readonly>
+        <button class="play-btn" data-rid="${i}">&#9654;</button>
+      `;
+      randomContainer.appendChild(row);
     });
-  });
+
+    for (let i = 0; i < 5; i++) {
+      const row = document.createElement('div');
+      row.className = 'id-row';
+      row.innerHTML = `
+        <input class="id-field custom-input" type="text" value="${savedCustom[i] || ''}" placeholder="enter id..." data-ci="${i}">
+        <button class="play-btn" data-cid="${i}">&#9654;</button>
+      `;
+      customContainer.appendChild(row);
+    }
+
+    document.querySelectorAll('.custom-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const idx = parseInt(input.dataset.ci);
+        savedCustom[idx] = input.value;
+        localStorage.setItem('yamabruh_custom_ids', JSON.stringify(savedCustom));
+      });
+    });
+  }
 
   // Play buttons
   document.addEventListener('click', e => {
     const playBtn = e.target.closest('.play-btn');
     if (!playBtn) return;
-
-    flash = 1.0;
 
     let idStr = '';
     if (playBtn.dataset.rid !== undefined) {
@@ -421,7 +421,7 @@
     const source = window.synth.playRingtone(idStr, () => {
       playBtn.classList.remove('playing');
       playingSources.delete(key);
-      lcdInfo.textContent = 'READY';
+      if (lcdInfo) lcdInfo.textContent = '';
     });
     playingSources.set(key, source);
   });
@@ -429,11 +429,12 @@
   // ── Preset Logic ──────────────────────────────────────────────────
   function updateDisplay() {
     const num = String(currentPreset).padStart(2, '0');
-    document.getElementById('seg-digits').textContent = num;
-    document.getElementById('preset-readout').textContent = window.synth.getPresetName(currentPreset);
+    const segEl = document.getElementById('seg-digits');
+    if (segEl) segEl.textContent = num;
     window.synth.currentPreset = currentPreset;
 
     // Update voice bank highlight
+    if (!vbGrid) return;
     const prev = vbGrid.querySelector('.vb-entry.active');
     if (prev) prev.classList.remove('active');
     const entry = vbGrid.querySelector(`[data-preset="${currentPreset}"]`);
@@ -453,7 +454,8 @@
     updateDisplay();
     window.synth._sendPreset();
     localStorage.setItem('yamabruh_preset', currentPreset);
-    document.getElementById('lcd-info').textContent = 'READY';
+    const lcdInfo = document.getElementById('lcd-info');
+    if (lcdInfo) lcdInfo.textContent = window.synth.getPresetName(currentPreset);
     // Reload tweak sliders if open
     const tb = document.getElementById('tweak-body');
     if (tb && tb.classList.contains('open')) {
@@ -479,16 +481,18 @@
   function enterDigit(d) {
     clearTimeout(presetTimeout);
     window.synth.playClick();
-    flash = 0.6;
-
     presetInput += d;
+    const segEl = document.getElementById('seg-digits');
 
     if (presetInput.length >= 2) {
       const num = parseInt(presetInput);
       selectPreset(num);
       presetInput = '';
     } else {
-      document.getElementById('lcd-info').textContent = presetInput + '_';
+      // Show the first digit on the LCD as it's entered
+      if (segEl) segEl.textContent = presetInput + '_';
+      const lcdInfo = document.getElementById('lcd-info');
+      if (lcdInfo) lcdInfo.textContent = '';
       // Auto-complete after 1.5s
       presetTimeout = setTimeout(() => {
         if (presetInput.length === 1) {
@@ -499,15 +503,16 @@
     }
   }
 
-  // Voice selector buttons
-  document.querySelectorAll('.sel-btn').forEach(btn => {
+  // Voice selector buttons (only those with data-num)
+  document.querySelectorAll('.sel-btn[data-num]').forEach(btn => {
     btn.addEventListener('pointerdown', () => {
       enterDigit(btn.dataset.num);
     });
   });
 
-  // ── MIDI Button + Device Select ───────────────────────────────────
+  // ── Synth Page UI (only on index.html) ────────────────────────────
   const midiBtn = document.getElementById('midi-btn');
+  if (midiBtn) { // guard: synth page only
   const midiSelect = document.getElementById('midi-select');
 
   function saveMidiState(enabled, deviceId) {
@@ -760,7 +765,6 @@
       clearTimeout(presetTimeout);
       selectPreset(currentPreset + 1);
       window.synth.playClick();
-      flash = 0.4;
       return;
     }
     if (e.key === 'ArrowDown') {
@@ -769,7 +773,6 @@
       clearTimeout(presetTimeout);
       selectPreset(currentPreset - 1);
       window.synth.playClick();
-      flash = 0.4;
       return;
     }
 
@@ -978,4 +981,6 @@
     todSlider.value = DEFAULT_VISUAL.todManual;
     updateTodUI();
   });
+
+  } // end synth page guard
 })();
