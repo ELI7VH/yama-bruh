@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "yama-bruh",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "www", "-l", "3456"],
-      "port": 3456
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "require('child_process').execSync('npx serve www -l 3456', {stdio:'inherit'})"],
+      "port": 3456,
+      "autoPort": false
     }
   ]
 }
