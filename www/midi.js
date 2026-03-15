@@ -82,7 +82,7 @@ class MIDIManager {
     }
   }
 
-  _bindSelected() {
+  async _bindSelected() {
     if (!this.access) return;
 
     // Unbind all
@@ -91,10 +91,10 @@ class MIDIManager {
     }
 
     if (!this.selectedInputId) {
-      // If nothing selected, bind ALL inputs (fallback)
+      // If nothing selected, bind ALL inputs
       let count = 0;
       for (const input of this.access.inputs.values()) {
-        input.onmidimessage = (e) => this._handleMessage(e);
+        await this._openAndBind(input);
         count++;
       }
       console.log(`[MIDI] Listening to ALL inputs (${count} devices)`);
@@ -102,11 +102,24 @@ class MIDIManager {
       // Bind only selected
       const selected = this.access.inputs.get(this.selectedInputId);
       if (selected) {
-        selected.onmidimessage = (e) => this._handleMessage(e);
+        await this._openAndBind(selected);
         console.log(`[MIDI] Listening to: "${selected.name}"`);
       } else {
         console.warn(`[MIDI] Selected input ${this.selectedInputId} not found`);
       }
+    }
+  }
+
+  async _openAndBind(input) {
+    try {
+      if (input.connection !== 'open') {
+        console.log(`[MIDI] Opening port: "${input.name}" (was ${input.connection})`);
+        await input.open();
+        console.log(`[MIDI] Port opened: "${input.name}" connection:${input.connection}`);
+      }
+      input.onmidimessage = (e) => this._handleMessage(e);
+    } catch (e) {
+      console.error(`[MIDI] Failed to open "${input.name}":`, e);
     }
   }
 
