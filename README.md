@@ -2,7 +2,32 @@
 
 WebAssembly 2-op FM synth ringtone generator. Generates deterministic 3-5 tone ringtones from unique IDs using a seeded PRNG and FM synthesis — 99 presets inspired by 90s Yamaha keyboards.
 
-**[Live Demo →](https://lucianlabs.ca/labs/yama-bruh/)**
+**[Synth Demo →](https://yama-bruh.lucianlabs.ca/)** · **[Ringtones Demo →](https://yama-bruh.lucianlabs.ca/ringtones.html)**
+
+## Notification Engine
+
+Drop-in ringtone player for any site. Pure JS, no WASM, no dependencies.
+
+```html
+<script src="https://yama-bruh.lucianlabs.ca/yamabruh-notify.js"></script>
+<script>
+  const notify = new YamaBruhNotify({
+    seed: 'my-app.example.com',  // deterministic per-app ringtones
+    preset: 88,                   // Telephone (0-98)
+  });
+
+  // Play a deterministic ringtone from any ID
+  notify.play('user-abc123');
+
+  // Play a random one-off ringtone
+  notify.play();
+
+  // Override defaults per-call
+  notify.play('order-456', { preset: 60, bpm: 160, volume: 0.5 });
+</script>
+```
+
+Same seed + same ID = same ringtone every time, across all devices.
 
 ## The Prompt
 
@@ -18,9 +43,11 @@ WebAssembly 2-op FM synth ringtone generator. Generates deterministic 3-5 tone r
 ## Architecture
 
 - **WASM Core** (Rust → `yama_bruh.wasm`, 7.5KB): Seeded PRNG, F#m pentatonic sequence generation, 2-op FM synthesis with 99 presets, audio buffer rendering
+- **Standalone Notify Engine** (`yamabruh-notify.js`): Pure JS FM synth, no WASM dependency, all 99 presets embedded, drop-in `<script>` tag
 - **Web Audio API**: Real-time FM synth for keyboard/MIDI playback with low latency
 - **GLSL Shader**: Full-page WebGL shader generating weathered plastic texture with mouse-responsive specular highlights and key-press flash
 - **Web MIDI API**: Connect any MIDI controller to play through the selected preset
+- **Native Binary** (Rust/cpal): Standalone audio engine with WASAPI output, crossterm TUI on separate thread
 
 ## Preset Categories
 
