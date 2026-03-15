@@ -5,8 +5,10 @@ class MIDIManager {
     this.synth = synth;
     this.access = null;
     this.connected = false;
-    this.activeNotes = new Map(); // midiNote -> noteId
+    this.selectedInputId = null;
+    this.activeNotes = new Map();
     this.onStateChange = null;
+    this.onDevicesChange = null;
   }
 
   async connect() {
@@ -16,9 +18,12 @@ class MIDIManager {
     }
 
     try {
-      this.access = await navigator.requestMIDIAccess();
-      this.access.onstatechange = () => this._bindInputs();
-      this._bindInputs();
+      this.access = await navigator.requestMIDIAccess({ sysex: false });
+      this.access.onstatechange = () => {
+        this._updateDeviceList();
+        this._bindSelected();
+      };
+      this._updateDeviceList();
       this.connected = true;
       if (this.onStateChange) this.onStateChange(true);
       return true;
@@ -34,34 +39,80 @@ class MIDIManager {
         input.onmidimessage = null;
       }
     }
-    // Stop all active notes
     for (const [note, noteId] of this.activeNotes) {
       this.synth.stopNote(noteId);
     }
     this.activeNotes.clear();
     this.connected = false;
+    this.selectedInputId = null;
     if (this.onStateChange) this.onStateChange(false);
   }
 
-  _bindInputs() {
-    if (!this.access) return;
+  getInputs() {
+    if (!this.access) return [];
+    const inputs = [];
     for (const input of this.access.inputs.values()) {
-      input.onmidimessage = (e) => this._handleMessage(e);
+      inputs.push({ id: input.id, name: input.name, manufacturer: input.manufacturer });
+    }
+    return inputs;
+  }
+
+  selectInput(inputId) {
+    // Unbind all first
+    if (this.access) {
+      for (const input of this.access.inputs.values()) {
+        input.onmidimessage = null;
+      }
+    }
+    // Stop active notes
+    for (const [note, noteId] of this.activeNotes) {
+      this.synth.stopNote(noteId);
+    }
+    this.activeNotes.clear();
+
+    this.selectedInputId = inputId;
+    this._bindSelected();
+  }
+
+  _updateDeviceList() {
+    if (this.onDevicesChange) {
+      this.onDevicesChange(this.getInputs());
+    }
+  }
+
+  _bindSelected() {
+    if (!this.access) return;
+
+    // Unbind all
+    for (const input of this.access.inputs.values()) {
+      input.onmidimessage = null;
+    }
+
+    if (!this.selectedInputId) {
+      // If nothing selected, bind ALL inputs (fallback)
+      for (const input of this.access.inputs.values()) {
+        input.onmidimessage = (e) => this._handleMessage(e);
+      }
+    } else {
+      // Bind only selected
+      const selected = this.access.inputs.get(this.selectedInputId);
+      if (selected) {
+        selected.onmidimessage = (e) => this._handleMessage(e);
+      }
     }
   }
 
   _handleMessage(event) {
-    const [status, note, velocity] = event.data;
+    if (!event.data || event.data.length < 2) return;
+    const [status, note, velocity = 0] = event.data;
     const cmd = status & 0xf0;
 
     if (cmd === 0x90 && velocity > 0) {
-      // Note On
       const vel = velocity / 127;
       const noteId = this.synth.playNote(note, vel);
       this.activeNotes.set(note, noteId);
       this._highlightKey(note, true);
     } else if (cmd === 0x80 || (cmd === 0x90 && velocity === 0)) {
-      // Note Off
       const noteId = this.activeNotes.get(note);
       if (noteId) {
         this.synth.stopNote(noteId);

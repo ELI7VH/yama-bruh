@@ -393,20 +393,67 @@
     });
   });
 
-  // ── MIDI Button ───────────────────────────────────────────────────
+  // ── MIDI Button + Device Select ─────────────────────────────────────
   const midiBtn = document.getElementById('midi-btn');
+  const midiSelect = document.getElementById('midi-select');
+
+  function updateMidiDeviceList(inputs) {
+    midiSelect.innerHTML = '';
+    if (inputs.length === 0) {
+      midiSelect.innerHTML = '<option value="">-- no devices --</option>';
+      midiSelect.disabled = true;
+      return;
+    }
+    midiSelect.disabled = false;
+    const allOpt = document.createElement('option');
+    allOpt.value = '';
+    allOpt.textContent = 'ALL INPUTS';
+    midiSelect.appendChild(allOpt);
+
+    inputs.forEach(inp => {
+      const opt = document.createElement('option');
+      opt.value = inp.id;
+      opt.textContent = (inp.name || 'Unknown') + (inp.manufacturer ? ' (' + inp.manufacturer + ')' : '');
+      midiSelect.appendChild(opt);
+    });
+
+    // Auto-select if only one device
+    if (inputs.length === 1) {
+      midiSelect.value = inputs[0].id;
+      window.midiManager.selectInput(inputs[0].id);
+      document.getElementById('lcd-info').textContent = inputs[0].name || 'MIDI DEVICE';
+    }
+  }
+
+  window.midiManager.onDevicesChange = updateMidiDeviceList;
+
+  midiSelect.addEventListener('change', () => {
+    const id = midiSelect.value || null;
+    window.midiManager.selectInput(id);
+    const lcdInfo = document.getElementById('lcd-info');
+    if (id) {
+      const opt = midiSelect.options[midiSelect.selectedIndex];
+      lcdInfo.textContent = 'MIDI: ' + opt.textContent.substring(0, 20);
+    } else {
+      lcdInfo.textContent = 'MIDI: ALL INPUTS';
+    }
+  });
+
   midiBtn.addEventListener('click', async () => {
     if (window.midiManager.connected) {
       window.midiManager.disconnect();
       midiBtn.textContent = 'MIDI: OFF';
       midiBtn.classList.remove('active');
+      midiSelect.innerHTML = '<option value="">-- no devices --</option>';
+      midiSelect.disabled = true;
       document.getElementById('lcd-info').textContent = 'MIDI DISCONNECTED';
     } else {
       const ok = await window.midiManager.connect();
       if (ok) {
         midiBtn.textContent = 'MIDI: ON';
         midiBtn.classList.add('active');
-        document.getElementById('lcd-info').textContent = 'MIDI CONNECTED';
+        const inputs = window.midiManager.getInputs();
+        document.getElementById('lcd-info').textContent = inputs.length + ' MIDI DEVICE' + (inputs.length !== 1 ? 'S' : '') + ' FOUND';
       } else {
         document.getElementById('lcd-info').textContent = 'MIDI UNAVAILABLE';
       }

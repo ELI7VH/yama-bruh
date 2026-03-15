@@ -211,6 +211,24 @@ html, body {
   color: #a0d890;
 }
 
+.midi-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #5a5248;
+  border-radius: 3px;
+  background: #3a3228;
+  color: #c0b8a8;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.midi-select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* ── ID Sections ───────────────────────────────────────────────────── */
 .id-section {
   margin: 0 8px 20px;
