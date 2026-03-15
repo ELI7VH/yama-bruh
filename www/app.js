@@ -420,16 +420,17 @@
     // Auto-select if only one device
     if (inputs.length === 1) {
       midiSelect.value = inputs[0].id;
-      window.midiManager.selectInput(inputs[0].id);
-      document.getElementById('lcd-info').textContent = inputs[0].name || 'MIDI DEVICE';
+      window.midiManager.selectInput(inputs[0].id).then(() => {
+        document.getElementById('lcd-info').textContent = inputs[0].name || 'MIDI DEVICE';
+      });
     }
   }
 
   window.midiManager.onDevicesChange = updateMidiDeviceList;
 
-  midiSelect.addEventListener('change', () => {
+  midiSelect.addEventListener('change', async () => {
     const id = midiSelect.value || null;
-    window.midiManager.selectInput(id);
+    await window.midiManager.selectInput(id);
     const lcdInfo = document.getElementById('lcd-info');
     if (id) {
       const opt = midiSelect.options[midiSelect.selectedIndex];
