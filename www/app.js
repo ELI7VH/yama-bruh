@@ -2,14 +2,16 @@
 
 (async function () {
   // ── State ─────────────────────────────────────────────────────────
-  let currentPreset = 0;
+  let currentPreset = parseInt(localStorage.getItem('yamabruh_preset') || '0');
   let presetInput = '';
   let presetTimeout = null;
   let flash = 0;
   let playingSources = new Map();
+  const savedMidi = JSON.parse(localStorage.getItem('yamabruh_midi') || 'null');
 
   // ── Init synth ────────────────────────────────────────────────────
   await window.synth.init();
+  window.synth.currentPreset = currentPreset;
 
   // ── Build Voice Bank ──────────────────────────────────────────────
   const vbGrid = document.getElementById('voice-bank-grid');
@@ -357,6 +359,7 @@
     currentPreset = Math.max(0, Math.min(98, num));
     updateDisplay();
     window.synth._sendPreset();
+    localStorage.setItem('yamabruh_preset', currentPreset);
     document.getElementById('lcd-info').textContent = 'READY';
   }
 
@@ -394,6 +397,10 @@
   const midiBtn = document.getElementById('midi-btn');
   const midiSelect = document.getElementById('midi-select');
 
+  function saveMidiState(enabled, deviceId) {
+    localStorage.setItem('yamabruh_midi', JSON.stringify({ enabled, deviceId: deviceId || null }));
+  }
+
   function updateMidiDeviceList(inputs) {
     midiSelect.innerHTML = '';
     if (inputs.length === 0) {
@@ -414,7 +421,15 @@
       midiSelect.appendChild(opt);
     });
 
-    if (inputs.length === 1) {
+    // Restore saved device selection, or auto-select if only one
+    const restoreId = savedMidi?.deviceId;
+    if (restoreId && [...midiSelect.options].some(o => o.value === restoreId)) {
+      midiSelect.value = restoreId;
+      window.midiManager.selectInput(restoreId).then(() => {
+        const opt = midiSelect.options[midiSelect.selectedIndex];
+        document.getElementById('lcd-info').textContent = 'MIDI: ' + opt.textContent.substring(0, 20);
+      });
+    } else if (inputs.length === 1) {
       midiSelect.value = inputs[0].id;
       window.midiManager.selectInput(inputs[0].id).then(() => {
         document.getElementById('lcd-info').textContent = inputs[0].name || 'MIDI DEVICE';
@@ -427,6 +442,7 @@
   midiSelect.addEventListener('change', async () => {
     const id = midiSelect.value || null;
     await window.midiManager.selectInput(id);
+    saveMidiState(true, id);
     const lcdInfo = document.getElementById('lcd-info');
     if (id) {
       const opt = midiSelect.options[midiSelect.selectedIndex];
@@ -436,6 +452,21 @@
     }
   });
 
+  async function connectMidi() {
+    const ok = await window.midiManager.connect();
+    if (ok) {
+      midiBtn.textContent = 'MIDI: ON';
+      midiBtn.classList.add('active');
+      const inputs = window.midiManager.getInputs();
+      document.getElementById('lcd-info').textContent = inputs.length + ' MIDI DEVICE' + (inputs.length !== 1 ? 'S' : '') + ' FOUND';
+      saveMidiState(true, midiSelect.value || null);
+      return true;
+    } else {
+      document.getElementById('lcd-info').textContent = 'MIDI UNAVAILABLE';
+      return false;
+    }
+  }
+
   midiBtn.addEventListener('click', async () => {
     if (window.midiManager.connected) {
       window.midiManager.disconnect();
@@ -443,19 +474,17 @@
       midiBtn.classList.remove('active');
       midiSelect.innerHTML = '<option value="">-- no devices --</option>';
       midiSelect.disabled = true;
+      saveMidiState(false, null);
       document.getElementById('lcd-info').textContent = 'MIDI DISCONNECTED';
     } else {
-      const ok = await window.midiManager.connect();
-      if (ok) {
-        midiBtn.textContent = 'MIDI: ON';
-        midiBtn.classList.add('active');
-        const inputs = window.midiManager.getInputs();
-        document.getElementById('lcd-info').textContent = inputs.length + ' MIDI DEVICE' + (inputs.length !== 1 ? 'S' : '') + ' FOUND';
-      } else {
-        document.getElementById('lcd-info').textContent = 'MIDI UNAVAILABLE';
-      }
+      await connectMidi();
     }
   });
+
+  // Auto-reconnect MIDI if was previously enabled
+  if (savedMidi?.enabled) {
+    connectMidi();
+  }
 
   // ── Computer Keyboard → Piano + Patch Control ─────────────────────
   const qwertyMap = {
