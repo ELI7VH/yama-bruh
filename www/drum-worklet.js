@@ -12,11 +12,15 @@ class YamaBruhDrumProcessor extends AudioWorkletProcessor {
   }
 
   _nextNoise() {
-    // Linear feedback shift register for noise
-    this.noiseSeed ^= this.noiseSeed << 13;
-    this.noiseSeed ^= this.noiseSeed >> 17;
-    this.noiseSeed ^= this.noiseSeed << 5;
-    return (this.noiseSeed & 0x7fffffff) / 0x7fffffff * 2 - 1;
+    // Xorshift32 LFSR — use unsigned right shift to avoid sign issues
+    let s = this.noiseSeed;
+    s ^= s << 13;
+    s ^= s >>> 17;  // unsigned right shift — critical
+    s ^= s << 5;
+    // Guard against zero-lock (LFSR degeneracy)
+    if (s === 0) s = 1;
+    this.noiseSeed = s;
+    return (s & 0x7fffffff) / 0x7fffffff * 2 - 1;
   }
 
   _onMessage(msg) {
@@ -164,6 +168,18 @@ class YamaBruhDrumProcessor extends AudioWorkletProcessor {
         if (h.cp > TAU) h.cp -= TAU;
         if (h.mp > TAU) h.mp -= TAU;
         h.t += dt;
+      }
+
+      // NaN guard — kill bad hits
+      if (s !== s) {
+        s = 0;
+        // Purge any corrupt hits
+        for (let hi = this.hits.length - 1; hi >= 0; hi--) {
+          const h = this.hits[hi];
+          if (!isFinite(h.cp) || !isFinite(h.mp)) {
+            this.hits.splice(hi, 1);
+          }
+        }
       }
 
       // Soft clip

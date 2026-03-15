@@ -181,6 +181,14 @@ class YamaBruhDrums {
     this._timerId = setInterval(() => {
       if (!this.playing) return;
 
+      // If we fell too far behind (e.g. tab was backgrounded), skip ahead
+      // instead of flooding the worklet with hundreds of catch-up triggers
+      const maxBehind = this._getStepDuration() * 4; // max 4 steps behind
+      if (this._nextStepTime < this.ctx.currentTime - maxBehind) {
+        this._nextStepTime = this.ctx.currentTime + 0.01;
+        this.currentStep = 0;
+      }
+
       while (this._nextStepTime < this.ctx.currentTime + this._scheduleAhead) {
         this._playStep(this._nextStepTime);
         this._nextStepTime += this._getStepDuration();

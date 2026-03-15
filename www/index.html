@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YAMA-BRUH — FM Ringtone Generator</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -40,6 +41,9 @@
       </div>
     </div>
 
+    <!-- Horizontal case grooves (between voice bank and controls) -->
+    <div class="case-grooves"></div>
+
     <!-- Controls: Display + Voice Selector -->
     <div class="controls-row">
       <div class="display-unit">
@@ -54,19 +58,19 @@
       <div class="voice-selector">
         <div class="panel-label">VOICE SELECTOR</div>
         <div class="selector-grid" id="selector-grid">
-          <div class="sel-col">
-            <span class="sel-label">5</span><button class="sel-btn" data-num="5"></button>
-            <span class="sel-label">6</span><button class="sel-btn" data-num="6"></button>
-            <span class="sel-label">7</span><button class="sel-btn" data-num="7"></button>
-            <span class="sel-label">8</span><button class="sel-btn" data-num="8"></button>
-            <span class="sel-label">9</span><button class="sel-btn" data-num="9"></button>
+          <div class="sel-row">
+            <div class="sel-cell"><span class="sel-label">0</span><button class="sel-btn" data-num="0"></button></div>
+            <div class="sel-cell"><span class="sel-label">1</span><button class="sel-btn" data-num="1"></button></div>
+            <div class="sel-cell"><span class="sel-label">2</span><button class="sel-btn" data-num="2"></button></div>
+            <div class="sel-cell"><span class="sel-label">3</span><button class="sel-btn" data-num="3"></button></div>
+            <div class="sel-cell"><span class="sel-label">4</span><button class="sel-btn" data-num="4"></button></div>
           </div>
-          <div class="sel-col">
-            <span class="sel-label">0</span><button class="sel-btn" data-num="0"></button>
-            <span class="sel-label">1</span><button class="sel-btn" data-num="1"></button>
-            <span class="sel-label">2</span><button class="sel-btn" data-num="2"></button>
-            <span class="sel-label">3</span><button class="sel-btn" data-num="3"></button>
-            <span class="sel-label">4</span><button class="sel-btn" data-num="4"></button>
+          <div class="sel-row">
+            <div class="sel-cell"><span class="sel-label">5</span><button class="sel-btn" data-num="5"></button></div>
+            <div class="sel-cell"><span class="sel-label">6</span><button class="sel-btn" data-num="6"></button></div>
+            <div class="sel-cell"><span class="sel-label">7</span><button class="sel-btn" data-num="7"></button></div>
+            <div class="sel-cell"><span class="sel-label">8</span><button class="sel-btn" data-num="8"></button></div>
+            <div class="sel-cell"><span class="sel-label">9</span><button class="sel-btn" data-num="9"></button></div>
           </div>
         </div>
       </div>
@@ -79,24 +83,45 @@
       <button class="fx-btn" id="fx-portamento">PORTAMENTO</button>
     </div>
 
-    <!-- Rhythm Section -->
+    <!-- Rhythm Section (PSS-170 style) -->
     <div class="rhythm-section">
-      <div class="panel-label">RHYTHM</div>
-      <div class="rhythm-controls">
-        <div class="rhythm-selector">
-          <button class="rhythm-btn" id="rhythm-prev">&lt;</button>
-          <div class="rhythm-display" id="rhythm-display">01 8 Beat</div>
-          <button class="rhythm-btn" id="rhythm-next">&gt;</button>
+      <div class="rhythm-grid">
+        <div class="rhythm-left">
+          <div class="rhythm-cell">
+            <span class="rhythm-label">SYNCHRO</span>
+            <button class="rhythm-btn rhythm-red" id="rhythm-fill">SYNC</button>
+          </div>
+          <div class="rhythm-cell">
+            <span class="rhythm-label">START/STOP</span>
+            <button class="rhythm-btn rhythm-red" id="rhythm-start">START</button>
+          </div>
         </div>
-        <div class="rhythm-transport">
-          <button class="rhythm-btn transport-btn" id="rhythm-start">START</button>
-          <button class="rhythm-btn transport-btn" id="rhythm-fill">FILL</button>
+        <div class="rhythm-center">
+          <div class="rhythm-row">
+            <div class="rhythm-cell"><span class="rhythm-label">8 BEAT</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="0"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">16 BEAT</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="1"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">ROCK</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="2"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">SAMBA</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="7"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">BOSSA NOVA</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="6"></button></div>
+          </div>
+          <div class="rhythm-row">
+            <div class="rhythm-cell"><span class="rhythm-label">DISCO</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="3"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">MARCH</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="9"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">SWING</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="4"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">REGGAE</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="8"></button></div>
+            <div class="rhythm-cell"><span class="rhythm-label">WALTZ</span><button class="rhythm-btn rhythm-grey rhythm-pat" data-pat="5"></button></div>
+          </div>
+          <div class="rhythm-label-center">RHYTHM</div>
         </div>
-        <div class="rhythm-tempo">
-          <button class="rhythm-btn tempo-btn" id="tempo-down">&minus;</button>
-          <div class="tempo-display" id="tempo-display">120</div>
-          <button class="rhythm-btn tempo-btn" id="tempo-up">&plus;</button>
-          <span class="tempo-label">BPM</span>
+        <div class="rhythm-right">
+          <div class="rhythm-cell">
+            <span class="rhythm-label">&nbsp;</span>
+            <button class="rhythm-btn rhythm-green" id="tempo-up">&#9650;</button>
+          </div>
+          <div class="rhythm-cell">
+            <span class="rhythm-label">TEMPO</span>
+            <button class="rhythm-btn rhythm-green" id="tempo-down">&#9660;</button>
+          </div>
         </div>
       </div>
       <div class="rhythm-steps" id="rhythm-steps">
@@ -104,6 +129,10 @@
         <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
         <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
         <span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span>
+      </div>
+      <div class="rhythm-display-row">
+        <div class="rhythm-display" id="rhythm-display">01 8 Beat</div>
+        <div class="tempo-display" id="tempo-display">120 <span class="tempo-label">BPM</span></div>
       </div>
     </div>
 

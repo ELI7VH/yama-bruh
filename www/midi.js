@@ -17,6 +17,10 @@ class MIDIManager {
     this.channelMap = new Array(16).fill(0);
     this.drumChannels = new Set([12, 13, 14, 15]); // 0-indexed
 
+    // Active channel — auto-set by incoming MIDI, used for preset assignment
+    this.activeChannel = 0;
+    this.onChannelChange = null; // (channel) => {}
+
     this._loadChannelMap();
   }
 
@@ -149,6 +153,12 @@ class MIDIManager {
     const noteKey = ch * 128 + note; // unique key per channel+note
 
     if (cmd === 0x90 && vel > 0) {
+      // Track active channel — auto-selects on note-on
+      if (this.activeChannel !== ch) {
+        this.activeChannel = ch;
+        if (this.onChannelChange) this.onChannelChange(ch);
+      }
+
       if (this.isDrumChannel(ch)) {
         // Drum channel — map MIDI notes to drum sounds
         this._triggerDrum(note, vel / 127);

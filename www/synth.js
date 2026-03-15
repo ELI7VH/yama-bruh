@@ -60,6 +60,15 @@ class YamaBruhSynth {
     });
     this.workletNode.connect(this.ctx.destination);
 
+    // Listen for crash reports from worklet
+    this.workletNode.port.onmessage = (e) => {
+      if (e.data?.type === 'crash') {
+        console.error('[SYNTH CRASH]', e.data.reason, e.data.detail, 'total:', e.data.count);
+        const lcd = document.getElementById('lcd-info');
+        if (lcd) lcd.textContent = 'AUDIO ERR: ' + e.data.reason;
+      }
+    };
+
     // Send initial preset to worklet
     this._sendPreset();
 

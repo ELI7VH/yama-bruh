@@ -47,31 +47,33 @@ html, body {
 #app::before { left: 0; }
 #app::after { right: 0; }
 
-/* ── Air Vents (speaker grille) ────────────────────────────────────── */
+/* ── Air Vents (vertical oriented, like real PSS-170 speaker grille) ─ */
 .air-vents {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 40px;
+  flex-direction: row;
+  gap: 6px;
+  padding: 14px 40px;
   margin-bottom: 4px;
+  justify-content: center;
 }
 
 .vent-slat {
-  height: 3px;
+  width: 4px;
+  height: 40px;
   background: linear-gradient(
-    90deg,
+    180deg,
     transparent 0%,
-    #080808 5%,
+    #050505 8%,
     #0a0a0a 50%,
-    #080808 95%,
+    #050505 92%,
     transparent 100%
   );
-  border-radius: 1px;
+  border-radius: 2px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.04),
-    inset 0 -1px 0 rgba(0,0,0,0.8),
-    0 1px 1px rgba(0,0,0,0.6),
-    0 2px 2px rgba(0,0,0,0.2);
+    inset 1px 0 0 rgba(255,255,255,0.04),
+    inset -1px 0 0 rgba(0,0,0,0.8),
+    1px 0 1px rgba(0,0,0,0.6),
+    2px 0 2px rgba(0,0,0,0.2);
 }
 
 /* ── Header Plate ──────────────────────────────────────────────────── */
@@ -122,19 +124,42 @@ html, body {
   text-transform: uppercase;
 }
 
-/* ── Voice Bank Panel ──────────────────────────────────────────────── */
+/* ── Voice Bank Panel (reflective dark surface) ──────────────────── */
 .voice-bank-panel {
-  margin: 0 14px 12px;
+  margin: 0 14px 0;
   padding: 10px 14px;
-  background: rgba(0,0,0,0.4);
+  background:
+    linear-gradient(165deg, rgba(40,40,40,0.15) 0%, transparent 40%, rgba(60,60,60,0.08) 70%, transparent 100%),
+    rgba(0,0,0,0.55);
   border: 1px solid #2a2a2a;
-  border-top-color: #222;
-  border-bottom-color: #333;
+  border-top-color: #333;
+  border-bottom-color: #222;
   border-radius: 2px;
   box-shadow:
-    inset 0 2px 6px rgba(0,0,0,0.45),
-    inset 0 -1px 0 rgba(255,255,255,0.02),
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    inset 0 -2px 6px rgba(0,0,0,0.5),
     0 1px 0 rgba(255,255,255,0.02);
+  position: relative;
+}
+
+/* Subtle reflective sheen on voice bank */
+.voice-bank-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.02) 0%,
+    rgba(255,255,255,0.04) 20%,
+    transparent 45%,
+    rgba(255,255,255,0.01) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 2px;
 }
 
 .voice-bank-grid {
@@ -172,14 +197,15 @@ html, body {
   font-weight: bold;
 }
 
+/* Numbers are white/light, names are cyan — like the real keyboard */
 .vb-num {
-  color: #44aa88;
+  color: #ccccbb;
   margin-right: 3px;
   font-weight: bold;
 }
 
 .vb-entry.active .vb-num {
-  color: #77ffdd;
+  color: #eeffee;
 }
 
 /* Voice bank scrollbar */
@@ -188,6 +214,29 @@ html, body {
 .voice-bank-grid::-webkit-scrollbar-thumb {
   background: rgba(34, 204, 170, 0.25);
   border-radius: 2px;
+}
+
+/* ── Horizontal Grooves (between voice bank and controls) ────────── */
+.case-grooves {
+  height: 16px;
+  margin: 0 14px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(30,30,30,0.0) 0px,
+    rgba(10,10,10,0.6) 1px,
+    rgba(40,40,40,0.3) 2px,
+    rgba(20,20,20,0.1) 3px,
+    rgba(30,30,30,0.0) 4px
+  );
+  position: relative;
+}
+
+.case-grooves::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.03) 50%, transparent 95%);
 }
 
 /* ── Controls Row ──────────────────────────────────────────────────── */
@@ -265,16 +314,17 @@ html, body {
   min-height: 14px;
 }
 
-/* ── Voice Selector (PSS-470 style) ────────────────────────────────── */
+/* ── Voice Selector (PSS-170 style) ──────────────────────────────── */
 .voice-selector {
   flex-shrink: 0;
 }
 
 .selector-grid {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   background: rgba(0,0,0,0.3);
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 3px;
   box-shadow:
     inset 0 2px 5px rgba(0,0,0,0.5),
@@ -282,55 +332,111 @@ html, body {
     0 1px 0 rgba(255,255,255,0.03);
 }
 
-.sel-col {
+.sel-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sel-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .sel-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: bold;
-  color: #22ccaa;
+  color: #ccccbb;
   letter-spacing: 1px;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
+/* ── Chamfered green buttons (shared style for voice selector) ───── */
 .sel-btn {
-  width: 56px;
-  height: 15px;
+  width: 50px;
+  height: 18px;
   border: none;
-  border-radius: 2px;
   cursor: pointer;
-  background: linear-gradient(180deg, #4ad89a 0%, #3cc88a 15%, #2aaa6e 60%, #1e8858 85%, #1a7850 100%);
-  box-shadow:
-    0 3px 5px rgba(0,0,0,0.5),
-    0 1px 2px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.25),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
-  transition: transform 0.06s, box-shadow 0.06s;
-  margin-bottom: 4px;
   position: relative;
+  margin-bottom: 2px;
+
+  /* Rough matte plastic base */
+  background:
+    linear-gradient(180deg,
+      #5aeaaa 0%,
+      #3cc88a 12%,
+      #30b87a 40%,
+      #28a870 65%,
+      #1e9060 88%,
+      #1a7850 100%
+    );
+  /* Chamfered/beveled 3D edges */
+  border-radius: 1px;
+  box-shadow:
+    /* Top chamfer highlight */
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    /* Left chamfer highlight */
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    /* Bottom chamfer shadow */
+    inset 0 -2px 0 rgba(0,0,0,0.25),
+    /* Right chamfer shadow */
+    inset -2px 0 0 rgba(0,0,0,0.15),
+    /* Drop shadow for depth */
+    0 3px 4px rgba(0,0,0,0.5),
+    0 1px 1px rgba(0,0,0,0.3);
+  transition: transform 0.04s, box-shadow 0.04s;
 }
 
+/* Rough texture noise overlay */
+.sel-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(0,0,0,0.03) 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(255,255,255,0.02) 1px,
+      transparent 2px
+    );
+  pointer-events: none;
+}
+
+/* Top highlight streak */
 .sel-btn::after {
   content: '';
   position: absolute;
   top: 1px;
-  left: 10%;
-  right: 10%;
+  left: 15%;
+  right: 15%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
   border-radius: 1px;
+  pointer-events: none;
 }
 
 .sel-btn:active {
   transform: translateY(2px);
   box-shadow:
-    0 1px 1px rgba(0,0,0,0.4),
-    inset 0 1px 2px rgba(0,0,0,0.2);
-  background: linear-gradient(180deg, #2aaa6e 0%, #1e8858 60%, #1a7850 100%);
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 1px 1px rgba(0,0,0,0.4);
+  background:
+    linear-gradient(180deg,
+      #30b87a 0%,
+      #28a870 40%,
+      #1e9060 80%,
+      #1a7850 100%
+    );
 }
 
 .sel-btn:active::after {
@@ -431,16 +537,21 @@ html, body {
   width: 34px;
   height: 28px;
   border: none;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #4ad89a 0%, #3cc88a 20%, #2aaa6a 80%, #1e8858 100%);
+  border-radius: 1px;
+  background:
+    linear-gradient(180deg,
+      #5aeaaa 0%, #3cc88a 15%, #30b87a 50%, #28a870 75%, #1e9060 100%
+    );
   color: #0a2a1a;
   font-size: 13px;
   cursor: pointer;
   box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25),
+    inset -2px 0 0 rgba(0,0,0,0.15),
     0 3px 4px rgba(0,0,0,0.4),
-    0 1px 1px rgba(0,0,0,0.2),
-    inset 0 1px 0 rgba(255,255,255,0.2),
-    inset 0 -1px 0 rgba(0,0,0,0.15);
+    0 1px 1px rgba(0,0,0,0.2);
   transition: transform 0.06s, box-shadow 0.06s;
   display: flex;
   align-items: center;
@@ -450,8 +561,8 @@ html, body {
 .play-btn:active {
   transform: translateY(2px);
   box-shadow:
-    0 1px 1px rgba(0,0,0,0.3),
-    inset 0 1px 2px rgba(0,0,0,0.15);
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 1px 1px rgba(0,0,0,0.3);
 }
 
 .play-btn.playing {
@@ -531,10 +642,18 @@ html, body {
   -webkit-user-select: none;
 }
 
+/* White keys — aged ivory/cream like the photos */
 .key-white {
   flex: 1;
-  background: linear-gradient(180deg, #f0ece4 0%, #e0dcd4 85%, #d0ccc4 100%);
-  border: 1px solid #888;
+  background:
+    linear-gradient(180deg,
+      #e8e4dc 0%,
+      #e0dcd4 20%,
+      #d8d4cc 85%,
+      #c8c4bb 100%
+    );
+  border: 1px solid #999;
+  border-top: none;
   border-radius: 0 0 4px 4px;
   margin: 0 1px;
   cursor: pointer;
@@ -542,12 +661,14 @@ html, body {
   z-index: 1;
   box-shadow:
     0 4px 6px rgba(0,0,0,0.3),
-    inset 0 -2px 3px rgba(0,0,0,0.05);
+    inset 0 -2px 3px rgba(0,0,0,0.06),
+    inset 1px 0 0 rgba(255,255,255,0.3),
+    inset -1px 0 0 rgba(0,0,0,0.05);
   transition: background 0.05s;
 }
 
 .key-white:active, .key-white.active {
-  background: linear-gradient(180deg, #d8d4cc 0%, #c8c4bc 85%, #b8b4ac 100%);
+  background: linear-gradient(180deg, #d0ccb8 0%, #c8c4b0 85%, #b8b4a0 100%);
   box-shadow:
     0 2px 3px rgba(0,0,0,0.3),
     inset 0 1px 2px rgba(0,0,0,0.1);
@@ -827,7 +948,17 @@ html, body {
   color: #ffcc44;
 }
 
-/* ── Rhythm Section ───────────────────────────────────────────────── */
+.ch-slot.active-ch {
+  border-color: #44aa66;
+  background: rgba(40,80,50,0.3);
+  box-shadow: 0 0 6px rgba(68,170,102,0.3);
+}
+
+.ch-slot.active-ch .ch-num {
+  color: #66cc88;
+}
+
+/* ── Rhythm Section (PSS-170 style) ──────────────────────────────── */
 .rhythm-section {
   margin: 0 14px 16px;
   padding: 10px 14px;
@@ -842,88 +973,201 @@ html, body {
     0 1px 0 rgba(255,255,255,0.02);
 }
 
-.rhythm-controls {
+.rhythm-grid {
   display: flex;
   gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
-.rhythm-selector {
+.rhythm-left,
+.rhythm-right {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rhythm-center {
   flex: 1;
-  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rhythm-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.rhythm-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.rhythm-label {
+  font-family: 'Courier New', monospace;
+  font-size: 8px;
+  font-weight: bold;
+  color: #ccccbb;
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rhythm-label-center {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: bold;
+  color: #ccccbb;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ── Shared chamfered button base for rhythm ─────────────────────── */
+.rhythm-btn {
+  width: 52px;
+  height: 18px;
+  border: none;
+  border-radius: 1px;
+  cursor: pointer;
+  position: relative;
+  font-size: 0;
+  line-height: 0;
+  transition: transform 0.04s, box-shadow 0.04s;
+}
+
+/* Rough texture on all rhythm buttons */
+.rhythm-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(0,0,0,0.04) 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(255,255,255,0.02) 1px,
+      transparent 2px
+    );
+  pointer-events: none;
+}
+
+.rhythm-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 1px 1px rgba(0,0,0,0.3) !important;
+}
+
+/* Red transport buttons — chamfered */
+.rhythm-red {
+  background: linear-gradient(180deg, #dd4444 0%, #bb2828 20%, #992020 60%, #771818 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.3),
+    inset -2px 0 0 rgba(0,0,0,0.2),
+    0 3px 4px rgba(0,0,0,0.5);
+  font-size: 7px;
+  color: #fff;
+  letter-spacing: 0.5px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  line-height: 18px;
+}
+
+.rhythm-red:hover {
+  background: linear-gradient(180deg, #ee5555 0%, #cc3333 20%, #aa2828 60%, #882020 100%);
+}
+
+.rhythm-red.active {
+  background: linear-gradient(180deg, #ff5555 0%, #dd3333 30%, #bb2020 70%, #991818 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.25),
+    inset 2px 0 0 rgba(255,255,255,0.12),
+    inset 0 -2px 0 rgba(0,0,0,0.3),
+    inset -2px 0 0 rgba(0,0,0,0.2),
+    0 0 10px rgba(255,68,68,0.25),
+    0 3px 4px rgba(0,0,0,0.5);
+}
+
+/* Grey pattern buttons — chamfered */
+.rhythm-grey {
+  background: linear-gradient(180deg, #999 0%, #777 15%, #606060 55%, #505050 85%, #444 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.3),
+    inset -2px 0 0 rgba(0,0,0,0.2),
+    0 3px 4px rgba(0,0,0,0.5);
+}
+
+.rhythm-grey:hover {
+  background: linear-gradient(180deg, #aaa 0%, #888 15%, #707070 55%, #606060 85%, #555 100%);
+}
+
+.rhythm-grey.active {
+  background: linear-gradient(180deg, #5aeaaa 0%, #3cc88a 15%, #30b87a 55%, #28a870 85%, #1e9060 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25),
+    inset -2px 0 0 rgba(0,0,0,0.15),
+    0 0 10px rgba(34,204,170,0.2),
+    0 3px 4px rgba(0,0,0,0.5);
+}
+
+/* Green tempo buttons — chamfered */
+.rhythm-green {
+  background: linear-gradient(180deg, #44dd88 0%, #2cb868 15%, #22a058 55%, #1a8848 85%, #147040 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 2px 0 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.25),
+    inset -2px 0 0 rgba(0,0,0,0.15),
+    0 3px 4px rgba(0,0,0,0.5);
+  font-size: 9px;
+  color: #fff;
+  line-height: 18px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+.rhythm-green:hover {
+  background: linear-gradient(180deg, #55ee99 0%, #38cc78 15%, #2ab068 55%, #209858 85%, #188048 100%);
+}
+
+/* Display row below grid */
+.rhythm-display-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  gap: 10px;
 }
 
 .rhythm-display {
-  flex: 1;
-  text-align: center;
   font-family: 'Courier New', monospace;
   font-size: 11px;
   font-weight: bold;
   color: #22ccaa;
   letter-spacing: 1px;
-  padding: 6px 8px;
+  padding: 4px 8px;
   background: #060606;
   border: 1px solid #222;
   border-radius: 3px;
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.rhythm-btn {
-  padding: 6px 10px;
-  border: 1px solid #333;
-  border-radius: 3px;
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
-  color: #22ccaa;
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  cursor: pointer;
-  box-shadow:
-    0 2px 4px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-}
-
-.rhythm-btn:hover {
-  background: linear-gradient(180deg, #333 0%, #222 100%);
-  color: #77ffdd;
-}
-
-.rhythm-btn:active {
-  transform: translateY(1px);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.transport-btn {
-  padding: 6px 14px;
-}
-
-.transport-btn.active {
-  background: linear-gradient(180deg, #1a5038 0%, #0d3020 100%);
-  color: #77ffdd;
-  border-color: #22ccaa;
-  box-shadow:
-    0 0 8px rgba(34,204,170,0.2),
-    0 2px 4px rgba(0,0,0,0.3);
-}
-
-.rhythm-transport {
-  display: flex;
-  gap: 6px;
-}
-
-.rhythm-tempo {
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .tempo-display {
@@ -932,19 +1176,7 @@ html, body {
   font-weight: bold;
   color: #ff4444;
   text-shadow: 0 0 6px rgba(255,68,68,0.3);
-  min-width: 32px;
-  text-align: center;
   letter-spacing: 1px;
-}
-
-.tempo-btn {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
 }
 
 .tempo-label {
@@ -997,7 +1229,7 @@ html, body {
   .controls-row { gap: 12px; }
   .id-field { font-size: 10px; padding: 5px 6px; }
   .tweak-grid { grid-template-columns: 1fr; }
-  .rhythm-controls { flex-direction: column; gap: 8px; }
-  .rhythm-selector { min-width: unset; }
+  .rhythm-grid { flex-wrap: wrap; }
+  .rhythm-btn { width: 42px; height: 14px; }
   .step-dot { width: 6px; height: 6px; }
 }

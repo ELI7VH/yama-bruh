@@ -463,6 +463,17 @@
         slider.nextElementSibling.textContent = params[i].toFixed(2);
       });
     }
+    // Auto-save preset to active MIDI channel
+    if (window.midiManager && window.midiManager.connected) {
+      const ch = window.midiManager.activeChannel;
+      if (!window.midiManager.isDrumChannel(ch)) {
+        window.midiManager.setChannelPreset(ch, currentPreset);
+        // Update channel grid display
+        if (chNameEls[ch]) {
+          chNameEls[ch].textContent = window.synth.getPresetName(currentPreset);
+        }
+      }
+    }
   }
 
   function enterDigit(d) {
@@ -644,10 +655,16 @@
   const fillBtn = document.getElementById('rhythm-fill');
   const stepDots = document.querySelectorAll('#rhythm-steps .step-dot');
 
+  const patBtns = document.querySelectorAll('.rhythm-pat');
+
   function updateRhythmDisplay() {
     const num = String(drumPattern + 1).padStart(2, '0');
     rhythmDisplay.textContent = num + ' ' + window.drums.getPatternName(drumPattern);
-    tempoDisplay.textContent = drumBpm;
+    tempoDisplay.innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
+    // Highlight active pattern button
+    patBtns.forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.pat) === drumPattern);
+    });
   }
   updateRhythmDisplay();
 
@@ -655,18 +672,15 @@
     localStorage.setItem('yamabruh_drums', JSON.stringify({ pattern: drumPattern, bpm: drumBpm }));
   }
 
-  document.getElementById('rhythm-prev').addEventListener('click', () => {
-    drumPattern = (drumPattern - 1 + window.drums.getPatternCount()) % window.drums.getPatternCount();
-    window.drums.setPattern(drumPattern);
-    updateRhythmDisplay();
-    saveDrumState();
-  });
-
-  document.getElementById('rhythm-next').addEventListener('click', () => {
-    drumPattern = (drumPattern + 1) % window.drums.getPatternCount();
-    window.drums.setPattern(drumPattern);
-    updateRhythmDisplay();
-    saveDrumState();
+  // Direct pattern select buttons
+  patBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      drumPattern = parseInt(btn.dataset.pat);
+      window.drums.setPattern(drumPattern);
+      updateRhythmDisplay();
+      saveDrumState();
+      document.getElementById('lcd-info').textContent = 'RHYTHM: ' + window.drums.getPatternName(drumPattern);
+    });
   });
 
   startBtn.addEventListener('click', () => {
@@ -696,14 +710,14 @@
   document.getElementById('tempo-down').addEventListener('click', () => {
     drumBpm = Math.max(60, drumBpm - 4);
     window.drums.setBpm(drumBpm);
-    tempoDisplay.textContent = drumBpm;
+    tempoDisplay.innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
     saveDrumState();
   });
 
   document.getElementById('tempo-up').addEventListener('click', () => {
     drumBpm = Math.min(240, drumBpm + 4);
     window.drums.setBpm(drumBpm);
-    tempoDisplay.textContent = drumBpm;
+    tempoDisplay.innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
     saveDrumState();
   });
 
@@ -836,6 +850,7 @@
 
   // ── MIDI Channel Grid ──────────────────────────────────────────────
   const chGrid = document.getElementById('ch-grid');
+  const chSlots = [];
   const chNameEls = [];
 
   function getChDisplayName(ch) {
@@ -844,10 +859,17 @@
     return window.synth.getPresetName(preset);
   }
 
+  function highlightActiveChannel(ch) {
+    chSlots.forEach((slot, i) => {
+      slot.classList.toggle('active-ch', i === ch);
+    });
+  }
+
   for (let ch = 0; ch < 16; ch++) {
     const slot = document.createElement('div');
     const isDrum = window.midiManager.isDrumChannel(ch);
     slot.className = 'ch-slot' + (isDrum ? ' drum-ch' : '');
+    chSlots.push(slot);
 
     const numEl = document.createElement('div');
     numEl.className = 'ch-num';
@@ -879,6 +901,15 @@
     slot.appendChild(setBtn);
     chGrid.appendChild(slot);
   }
+
+  // Auto-channel: highlight active MIDI channel and load its preset
+  window.midiManager.onChannelChange = (ch) => {
+    highlightActiveChannel(ch);
+    if (!window.midiManager.isDrumChannel(ch)) {
+      const chPreset = window.midiManager.getChannelPreset(ch);
+      selectPreset(chPreset);
+    }
+  };
 
   // ── Visual Config UI ──────────────────────────────────────────────
   const visualToggle = document.getElementById('visual-toggle');

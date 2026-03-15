@@ -21,7 +21,20 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
     // Global sustain
     this.sustainOn = false;
     this.sustainMult = 3.0; // release multiplier when sustain engaged
+    // Crash diagnostics
+    this._crashCount = 0;
+    this._lastCrashReport = 0;
     this.port.onmessage = (e) => this._onMessage(e.data);
+  }
+
+  _reportCrash(reason, detail) {
+    this._crashCount++;
+    const now = currentTime;
+    // Throttle reports to max 1 per second
+    if (now - this._lastCrashReport > 1) {
+      this._lastCrashReport = now;
+      this.port.postMessage({ type: 'crash', reason, detail, count: this._crashCount });
+    }
   }
 
   _onMessage(msg) {
@@ -165,7 +178,16 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
         // 2-op FM
         const ms = Math.sin(v.mp + fb * v.pm);
         v.pm = ms;
-        s += Math.sin(v.cp + mi * ms) * env * v.velocity * 0.35;
+        const voiceSample = Math.sin(v.cp + mi * ms) * env * v.velocity * 0.35;
+
+        // Kill voice if it produces NaN (bad preset, phase overflow)
+        if (voiceSample !== voiceSample || !isFinite(v.cp) || !isFinite(v.mp)) {
+          this._reportCrash('nan_voice', { note: v.note, freq: v.freq, cp: v.cp, mp: v.mp });
+          this.voices.splice(vi, 1);
+          continue;
+        }
+
+        s += voiceSample;
 
         v.cp += TAU * crf / sr;
         v.mp += TAU * mrf / sr;
@@ -174,7 +196,12 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
       }
 
       // NaN guard — reset if audio goes bad
-      if (s !== s) { s = 0; this.comp1Env = 0; this.comp2Env = 0; }
+      if (s !== s) {
+        s = 0;
+        this.comp1Env = 0;
+        this.comp2Env = 0;
+        this._reportCrash('nan_output', { voices: this.voices.length });
+      }
 
       // ── Two-stage compression + limiter ──────────────────────
       const abs1 = s < 0 ? -s : s;
@@ -199,6 +226,10 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
         const over = this.comp2Env - t2;
         s *= (t2 + over / 6) / this.comp2Env;
       }
+
+      // NaN guard on compressor envelopes
+      if (this.comp1Env !== this.comp1Env) this.comp1Env = 0;
+      if (this.comp2Env !== this.comp2Env) this.comp2Env = 0;
 
       // Brickwall limiter at -0.1dB ≈ 0.9886
       if (s > 0.9886) s = 0.9886;
