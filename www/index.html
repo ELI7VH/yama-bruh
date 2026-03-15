@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAMA-BRUH — FM Ringtone Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- GLSL background canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <div id="app">
+    <!-- Header plate -->
+    <div class="plate-header">
+      <div class="brand">YAMA-BRUH</div>
+      <div class="model-text">YB-99FM</div>
+    </div>
+
+    <!-- LCD Display -->
+    <div class="lcd-bezel">
+      <div class="lcd" id="lcd">
+        <div class="lcd-row lcd-title">YAMA-BRUH v1.0</div>
+        <div class="lcd-row lcd-preset">
+          <span id="lcd-preset-num">01</span>
+          <span id="lcd-preset-name">Grand Piano</span>
+        </div>
+        <div class="lcd-row lcd-info" id="lcd-info">READY</div>
+      </div>
+    </div>
+
+    <!-- Keypad + controls -->
+    <div class="controls-section">
+      <div class="keypad">
+        <button class="kp-btn" data-key="1">1</button>
+        <button class="kp-btn" data-key="2">2</button>
+        <button class="kp-btn" data-key="3">3</button>
+        <button class="kp-btn kp-func" data-key="+">+</button>
+        <button class="kp-btn" data-key="4">4</button>
+        <button class="kp-btn" data-key="5">5</button>
+        <button class="kp-btn" data-key="6">6</button>
+        <button class="kp-btn kp-func" data-key="-">&minus;</button>
+        <button class="kp-btn" data-key="7">7</button>
+        <button class="kp-btn" data-key="8">8</button>
+        <button class="kp-btn" data-key="9">9</button>
+        <button class="kp-btn kp-func kp-ok" data-key="ok">OK</button>
+        <button class="kp-btn kp-zero" data-key="0">0</button>
+        <button class="kp-btn kp-func kp-clr" data-key="clr">CLR</button>
+      </div>
+      <div class="midi-section">
+        <button id="midi-btn" class="midi-btn">MIDI: OFF</button>
+      </div>
+    </div>
+
+    <!-- Ringtone IDs -->
+    <div class="id-section">
+      <div class="section-label">RANDOM IDs</div>
+      <div id="random-ids" class="id-list"></div>
+      <div class="section-label">CUSTOM IDs</div>
+      <div id="custom-ids" class="id-list"></div>
+    </div>
+
+    <!-- Piano keyboard -->
+    <div class="keyboard-section">
+      <div class="keyboard" id="keyboard"></div>
+    </div>
+  </div>
+
+  <script src="synth.js"></script>
+  <script src="midi.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
