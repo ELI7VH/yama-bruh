@@ -11,16 +11,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Notify GroundControl
+      - name: Deploy via GroundControl
         run: |
           curl -sf -X POST https://control.lucianlabs.ca/deploy \
             -H "Content-Type: application/json" \
             -H "X-API-Key: ${{ secrets.GC_API_KEY }}" \
-            -d '{
-              "repo": "ELI7VH/yama-bruh",
-              "ref": "${{ github.sha }}",
-              "source": "www/",
-              "domain": "yama-bruh.lucianlabs.ca"
-            }'
+            -d '{"repo": "ELI7VH/yama-bruh"}'
