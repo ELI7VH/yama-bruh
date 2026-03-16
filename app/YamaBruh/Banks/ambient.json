@@ -1,0 +1,70 @@
+{
+  "id": "ambient",
+  "name": "Ambient Textures",
+  "description": "Ethereal pads, drones, and atmospheric sounds for notification tones that feel like environments.",
+  "author": "Elijah Lucian",
+  "sortOrder": 1,
+  "iapProductID": "ca.lucianlabs.yamabruh.bank.ambient",
+  "presets": [
+    {
+      "id": "amb-deep-ocean",
+      "name": "Deep Ocean",
+      "category": "Drone",
+      "params": { "carrierRatio": 1.0, "modRatio": 0.5, "modIndex": 1.5, "attack": 0.8, "decay": 2.0, "sustain": 0.6, "release": 3.0, "feedback": 0.05 }
+    },
+    {
+      "id": "amb-crystal-cave",
+      "name": "Crystal Cave",
+      "category": "Bell",
+      "params": { "carrierRatio": 1.0, "modRatio": 5.19, "modIndex": 4.0, "attack": 0.001, "decay": 2.5, "sustain": 0.0, "release": 3.5, "feedback": 0.03 }
+    },
+    {
+      "id": "amb-solar-wind",
+      "name": "Solar Wind",
+      "category": "Pad",
+      "params": { "carrierRatio": 1.0, "modRatio": 1.41, "modIndex": 2.0, "attack": 0.6, "decay": 1.5, "sustain": 0.5, "release": 2.5, "feedback": 0.12 }
+    },
+    {
+      "id": "amb-frost",
+      "name": "Frost",
+      "category": "Texture",
+      "params": { "carrierRatio": 2.0, "modRatio": 7.0, "modIndex": 1.0, "attack": 0.3, "decay": 1.0, "sustain": 0.4, "release": 2.0, "feedback": 0.02 }
+    },
+    {
+      "id": "amb-nebula",
+      "name": "Nebula",
+      "category": "Pad",
+      "params": { "carrierRatio": 1.0, "modRatio": 3.0, "modIndex": 0.8, "attack": 1.0, "decay": 2.0, "sustain": 0.7, "release": 3.0, "feedback": 0.08 }
+    },
+    {
+      "id": "amb-rain-glass",
+      "name": "Rain on Glass",
+      "category": "Texture",
+      "params": { "carrierRatio": 1.0, "modRatio": 11.0, "modIndex": 2.5, "attack": 0.001, "decay": 0.8, "sustain": 0.0, "release": 1.5, "feedback": 0.0 }
+    },
+    {
+      "id": "amb-aurora",
+      "name": "Aurora",
+      "category": "Pad",
+      "params": { "carrierRatio": 1.0, "modRatio": 2.0, "modIndex": 0.5, "attack": 0.5, "decay": 1.5, "sustain": 0.8, "release": 2.5, "feedback": 0.01 }
+    },
+    {
+      "id": "amb-temple-bell",
+      "name": "Temple Bell",
+      "category": "Bell",
+      "params": { "carrierRatio": 1.0, "modRatio": 3.5, "modIndex": 6.0, "attack": 0.001, "decay": 3.0, "sustain": 0.0, "release": 4.0, "feedback": 0.04 }
+    },
+    {
+      "id": "amb-whale-song",
+      "name": "Whale Song",
+      "category": "Drone",
+      "params": { "carrierRatio": 0.5, "modRatio": 0.25, "modIndex": 3.0, "attack": 0.4, "decay": 1.0, "sustain": 0.5, "release": 2.0, "feedback": 0.15 }
+    },
+    {
+      "id": "amb-starfield",
+      "name": "Starfield",
+      "category": "Texture",
+      "params": { "carrierRatio": 1.0, "modRatio": 9.0, "modIndex": 1.5, "attack": 0.2, "decay": 0.8, "sustain": 0.3, "release": 2.0, "feedback": 0.06 }
+    }
+  ]
+}

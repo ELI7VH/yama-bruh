@@ -1,0 +1,90 @@
+{
+  "identifier" : "F8A3D3B2-1234-4567-89AB-CDEF01234567",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "fullsynth001",
+      "localizations" : [
+        {
+          "description" : "Unlock all 99 hand-tuned FM presets across 10 categories.",
+          "displayName" : "Full Synth Pack",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ca.lucianlabs.yamabruh.fullsynth",
+      "referenceName" : "Full Synth Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : false,
+      "internalID" : "auv3001",
+      "localizations" : [
+        {
+          "description" : "Use YamaBruh as a real-time AUv3 instrument in GarageBand, Logic, AUM, and any compatible host.",
+          "displayName" : "AUv3 Instrument",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ca.lucianlabs.yamabruh.auv3",
+      "referenceName" : "AUv3 Instrument",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "5.99",
+      "familyShareable" : false,
+      "internalID" : "bundle001",
+      "localizations" : [
+        {
+          "description" : "All 99 presets + AUv3 instrument. Everything YamaBruh has to offer.",
+          "displayName" : "Complete Bundle",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ca.lucianlabs.yamabruh.bundle",
+      "referenceName" : "Complete Bundle",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "bankambient001",
+      "localizations" : [
+        {
+          "description" : "10 ethereal FM presets — pads, drones, bells, and atmospheric textures.",
+          "displayName" : "Ambient Textures Bank",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ca.lucianlabs.yamabruh.bank.ambient",
+      "referenceName" : "Ambient Textures Bank",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "2.99",
+      "familyShareable" : false,
+      "internalID" : "bankpss170001",
+      "localizations" : [
+        {
+          "description" : "All 100 voices from the Yamaha PSS-170, converted from original YM2413 OPLL register dumps.",
+          "displayName" : "PSS-170 Collection",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "ca.lucianlabs.yamabruh.bank.pss170",
+      "referenceName" : "PSS-170 Collection",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "yamabruh",
+    "_developerTeamID" : ""
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

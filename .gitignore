@@ -4,3 +4,7 @@ Cargo.lock
 *.swo
 .build/
 .swiftpm/
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+.DS_Store

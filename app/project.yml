@@ -1,0 +1,59 @@
+name: YamaBruhApp
+options:
+  bundleIdPrefix: ca.lucianlabs
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  YamaBruh:
+    path: ..
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  YamaBruhApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: YamaBruh
+        excludes:
+          - Banks
+      - path: Shared
+    resources:
+      - path: YamaBruh/Banks
+        buildPhase: resources
+    dependencies:
+      - package: YamaBruh
+      - target: YamaBruhAUv3Extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ca.lucianlabs.yamabruh
+        INFOPLIST_FILE: YamaBruh/Info.plist
+        CODE_SIGN_ENTITLEMENTS: YamaBruh/YamaBruh.entitlements
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        PRODUCT_NAME: YamaBruh
+        PRODUCT_MODULE_NAME: YamaBruhApp
+
+  YamaBruhAUv3Extension:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: YamaBruhAUv3
+      - path: Shared
+    dependencies:
+      - package: YamaBruh
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ca.lucianlabs.yamabruh.auv3
+        INFOPLIST_FILE: YamaBruhAUv3/Info.plist
+        CODE_SIGN_ENTITLEMENTS: YamaBruhAUv3/YamaBruhAUv3.entitlements
+        PRODUCT_NAME: YamaBruhAUv3
+        PRODUCT_MODULE_NAME: YamaBruhAUv3Ext
+        APPLICATION_EXTENSION_API_ONLY: YES

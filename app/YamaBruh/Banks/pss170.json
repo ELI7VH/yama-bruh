@@ -1,0 +1,3110 @@
+{
+  "id": "pss170",
+  "name": "PSS-170 Collection",
+  "description": "All 100 voices from the Yamaha PSS-170 keyboard, converted from YM2413 OPLL register dumps. Register data captured by plgDavid via logic analyzer on the PSS-270 data bus (github.com/plgDavid/misc/tree/master/OPLL%20Synth%20Patches).",
+  "author": "Yamaha / plgDavid (converted by Lucian Labs)",
+  "sortOrder": 2,
+  "iapProductID": "ca.lucianlabs.yamabruh.bank.pss170",
+  "presets": [
+    {
+      "id": "pss-00",
+      "name": "Piano 1",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.01,
+          "decay": 6,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.515,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-01",
+      "name": "Piano 2",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.01,
+          "decay": 6,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.942,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-02",
+      "name": "Honky-Tonk Piano",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 6,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.582,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-03",
+      "name": "Electric Piano 1",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 10,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 0.334,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-04",
+      "name": "Electric Piano 2",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 10,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 0.793,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-05",
+      "name": "Harpsichord 1",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.15,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-06",
+      "name": "Harpsichord 2",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.15,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 9.699,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-07",
+      "name": "Harpsichord 3",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.15,
+          "sustainLevel": 0.708,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 9.699,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-08",
+      "name": "Honky-Tonk Clavi",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 5.299,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-09",
+      "name": "Glass Celesta",
+      "category": "Piano",
+      "params": {
+        "modulator": {
+          "mult": 7,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 6,
+          "sustainLevel": 0.708,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": true
+        },
+        "modDepth": 3.157,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-10",
+      "name": "Reed Organ",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.04,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.281,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-11",
+      "name": "Pipe Organ 1",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.35,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.055,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-12",
+      "name": "Pipe Organ 2",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.04,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.258,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-13",
+      "name": "Electronic Organ 1",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.365,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-14",
+      "name": "Electronic Organ 2",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.04,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.258,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-15",
+      "name": "Jazz Organ",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 0.126,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 0.708,
+          "release": 0.15,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.235,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-16",
+      "name": "Accordion",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.35,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.05,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-17",
+      "name": "Vibraphone",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 7,
+          "attack": 0.001,
+          "decay": 0.15,
+          "sustainLevel": 0.501,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.15,
+          "sustainLevel": 0.708,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 0.561,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-18",
+      "name": "Marimba 1",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 0.02,
+          "sustainLevel": 0.708,
+          "release": 0.005,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.032,
+          "release": 0.15,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-19",
+      "name": "Marimba 2",
+      "category": "Organ",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 0.02,
+          "sustainLevel": 0.708,
+          "release": 0.005,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.032,
+          "release": 0.15,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-20",
+      "name": "Trumpet",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.07,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.12,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-21",
+      "name": "Mute Trumpet",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 1.0,
+          "sustainLevel": 0.501,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.12,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-22",
+      "name": "Trombone",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 1.0,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.451,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-23",
+      "name": "Soft Trombone",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 1.0,
+          "decay": 6,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.451,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-24",
+      "name": "Horn",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 1.8,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.35,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-25",
+      "name": "Alpenhorn",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 1.8,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 2.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.667,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-26",
+      "name": "Tuba",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 1.0,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.35,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.725,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-27",
+      "name": "Brass Ensemble 1",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 1.0,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.12,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-28",
+      "name": "Brass Ensemble 2",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.07,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.12,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-29",
+      "name": "Brass Ensemble 3",
+      "category": "Brass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 1.0,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.35,
+          "decay": 18,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.725,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-30",
+      "name": "Flute",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.5,
+          "sustainLevel": 0.089,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.35,
+          "decay": 6,
+          "sustainLevel": 0.501,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.752,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-31",
+      "name": "Panflute",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 6,
+          "attack": 0.003,
+          "decay": 0.01,
+          "sustainLevel": 0.011,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.793,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-32",
+      "name": "Piccolo",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 4,
+          "attack": 0.35,
+          "decay": 0.005,
+          "sustainLevel": 0.708,
+          "release": 0.3,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 4,
+          "attack": 0.12,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.199,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-33",
+      "name": "Clarinet",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.942,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-34",
+      "name": "Bass Clarinet",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.12,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-35",
+      "name": "Oboe",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.2,
+          "decay": 30,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.88,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-36",
+      "name": "Bassoon",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.88,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-37",
+      "name": "Saxophone",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.01,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.451,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-38",
+      "name": "Bagpipe",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 1.8,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": true
+        },
+        "modDepth": 8.896,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-39",
+      "name": "Woodwinds",
+      "category": "Woodwind",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.88,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-40",
+      "name": "Violin 1",
+      "category": "Strings",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.005,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.942,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-41",
+      "name": "Violin 2",
+      "category": "Strings",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.331,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-42",
+      "name": "Cello",
+      "category": "Strings",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.04,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-43",
+      "name": "Strings",
+      "category": "Strings",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.04,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 1.8,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-44",
+      "name": "Electric Bass",
+      "category": "Bass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 0.501,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.003,
+          "decay": 6,
+          "sustainLevel": 0.708,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 2.05,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-45",
+      "name": "Slap Bass",
+      "category": "Bass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.003,
+          "decay": 0.3,
+          "sustainLevel": 0.251,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 6,
+          "sustainLevel": 0.178,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 7.485,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-46",
+      "name": "Wood Bass",
+      "category": "Bass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.01,
+          "decay": 0.3,
+          "sustainLevel": 1.0,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.07,
+          "decay": 3.5,
+          "sustainLevel": 1.0,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 2.05,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-47",
+      "name": "Synth Bass",
+      "category": "Bass",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.01,
+          "decay": 18,
+          "sustainLevel": 0.501,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.251,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-48",
+      "name": "Banjo",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.3,
+          "sustainLevel": 0.501,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 2.05,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-49",
+      "name": "Mandolin",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.3,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.582,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-50",
+      "name": "Classic Guitar",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 0.08,
+          "sustainLevel": 0.126,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.07,
+          "decay": 0.3,
+          "sustainLevel": 0.501,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 8.16,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-51",
+      "name": "Jazz Guitar",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.07,
+          "decay": 0.3,
+          "sustainLevel": 0.708,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 0.515,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-52",
+      "name": "Folk Guitar",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.02,
+          "sustainLevel": 0.178,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 9.699,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-53",
+      "name": "Hawaiian Guitar",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.02,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 1.451,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-54",
+      "name": "Ukulele",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.04,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 3.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 5.777,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-55",
+      "name": "Koto",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 0.355,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.003,
+          "decay": 0.5,
+          "sustainLevel": 0.501,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-56",
+      "name": "Shamisen",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.003,
+          "decay": 0.04,
+          "sustainLevel": 0.089,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 1.0,
+          "sustainLevel": 0.063,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-57",
+      "name": "Harp",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.221,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-58",
+      "name": "Harmonica",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.35,
+          "decay": 6,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 6,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": true
+        },
+        "modDepth": 1.582,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-59",
+      "name": "Music Box",
+      "category": "Guitar/Plucked",
+      "params": {
+        "modulator": {
+          "mult": 9,
+          "attack": 0.001,
+          "decay": 0.04,
+          "sustainLevel": 0.178,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.02,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 3.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 3.441,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-60",
+      "name": "Brass & Marimba",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 1.8,
+          "decay": 2.0,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 12.566
+      }
+    },
+    {
+      "id": "pss-61",
+      "name": "Flute & Harpsichord",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.15,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.003,
+          "decay": 6,
+          "sustainLevel": 1.0,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 9.699,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-62",
+      "name": "Oboe & Vibraphone",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.003,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.005,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 2,
+          "attack": 0.2,
+          "decay": 30,
+          "sustainLevel": 0.708,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.88,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-63",
+      "name": "Clarinet & Harp",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.221,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-64",
+      "name": "Violin & Steel Drum",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.04,
+          "decay": 3.5,
+          "sustainLevel": 0.006,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.01,
+          "decay": 1.0,
+          "sustainLevel": 0.032,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 5.299,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-65",
+      "name": "Handsaw",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 5,
+          "attack": 0.35,
+          "decay": 0.15,
+          "sustainLevel": 0.708,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.793,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-66",
+      "name": "Synth Brass",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 18,
+          "sustainLevel": 0.251,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 6,
+          "sustainLevel": 0.251,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.725,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-67",
+      "name": "Metallic Synth",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 3.5,
+          "sustainLevel": 0.089,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 1.0,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 4.861,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-68",
+      "name": "Sine Wave",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 99,
+          "decay": 0.005,
+          "sustainLevel": 0.006,
+          "release": 0.005,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.055,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-69",
+      "name": "Reverse",
+      "category": "Combo/Synth",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 3,
+          "decay": 0.5,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": true
+        },
+        "modDepth": 0.793,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-70",
+      "name": "Human Voice 1",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 1.0,
+          "sustainLevel": 0.045,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 3,
+          "attack": 0.6,
+          "decay": 6,
+          "sustainLevel": 0.006,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 3.157,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-71",
+      "name": "Human Voice 2",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 6,
+          "sustainLevel": 0.006,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.725,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-72",
+      "name": "Human Voice 3",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.355,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 4,
+          "attack": 0.35,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.221,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-73",
+      "name": "Whisper",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 1.0,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.793,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-74",
+      "name": "Whistle",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 6,
+          "attack": 0.003,
+          "decay": 0.01,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 4,
+          "attack": 0.35,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 0.793,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-75",
+      "name": "Gurgle",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 3,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 3.5,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 1.0,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-76",
+      "name": "Bubble",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 3.5,
+          "sustainLevel": 1.0,
+          "release": 3.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 1.582,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-77",
+      "name": "Raindrop",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 0.006,
+          "release": 0.005,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.055,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-78",
+      "name": "Popcorn",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 99,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.436,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-79",
+      "name": "Drip",
+      "category": "Voice/SFX",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 1.0,
+          "decay": 6,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.006,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 3.157,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-80",
+      "name": "Dog Pianist",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.355,
+          "release": 99,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 4,
+          "attack": 0.35,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.221,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-81",
+      "name": "Duck",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.2,
+          "decay": 3.5,
+          "sustainLevel": 0.501,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 4.861,
+        "feedback": 0.393
+      }
+    },
+    {
+      "id": "pss-82",
+      "name": "Baby Doll",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 8,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 4,
+          "attack": 0.12,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.895,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-83",
+      "name": "Telephone Bell",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.04,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 6,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 2.895,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-84",
+      "name": "Emergency Alarm",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 18,
+          "sustainLevel": 0.708,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.027,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-85",
+      "name": "Leaf Spring",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 0.251,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 8,
+          "attack": 0.005,
+          "decay": 6,
+          "sustainLevel": 0.708,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 2.656,
+        "feedback": 0.196
+      }
+    },
+    {
+      "id": "pss-86",
+      "name": "Comet",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.895,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-87",
+      "name": "Fireworks",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 5,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 1.0,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-88",
+      "name": "Crystal",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.895,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-89",
+      "name": "Ghost",
+      "category": "SFX",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 99,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.6,
+          "decay": 6,
+          "sustainLevel": 0.006,
+          "release": 6,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 1.725,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-90",
+      "name": "Hand Bell",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 5,
+          "decay": 6,
+          "sustainLevel": 0.006,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 2.0,
+          "sustainLevel": 0.501,
+          "release": 18,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-91",
+      "name": "Chimes",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 2.895,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-92",
+      "name": "Bell",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.07,
+          "decay": 99,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": true,
+          "tremolo": true,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.12,
+          "decay": 10,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 8.16,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-93",
+      "name": "Steel Drum",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 3,
+          "attack": 0.04,
+          "decay": 3.5,
+          "sustainLevel": 0.006,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.01,
+          "decay": 1.0,
+          "sustainLevel": 0.032,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 5.299,
+        "feedback": 0
+      }
+    },
+    {
+      "id": "pss-94",
+      "name": "Cowbell",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 5,
+          "attack": 0.001,
+          "decay": 3.5,
+          "sustainLevel": 0.708,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 6,
+          "sustainLevel": 1.0,
+          "release": 3.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 0.472,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-95",
+      "name": "Synth Tom 1",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.15,
+          "sustainLevel": 0.006,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 1.0,
+          "sustainLevel": 0.251,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-96",
+      "name": "Synth Tom 2",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 0.15,
+          "sustainLevel": 0.178,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 0.001,
+          "decay": 1.0,
+          "sustainLevel": 0.126,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 3.157,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-97",
+      "name": "Snare Drum",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 10,
+          "waveform": 1,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 3,
+          "attack": 0.12,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 0.5,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": true,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-98",
+      "name": "Machine Gun",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 4,
+          "attack": 0.001,
+          "decay": 30,
+          "sustainLevel": 1.0,
+          "release": 30,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "carrier": {
+          "mult": 1,
+          "attack": 0.001,
+          "decay": 0.5,
+          "sustainLevel": 0.708,
+          "release": 1.0,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": false
+        },
+        "modDepth": 12.566,
+        "feedback": 0.785
+      }
+    },
+    {
+      "id": "pss-99",
+      "name": "Wave",
+      "category": "Percussion",
+      "params": {
+        "modulator": {
+          "mult": 2,
+          "attack": 0.001,
+          "decay": 0.005,
+          "sustainLevel": 1.0,
+          "release": 99,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "carrier": {
+          "mult": 0.5,
+          "attack": 3,
+          "decay": 30,
+          "sustainLevel": 0.006,
+          "release": 10,
+          "waveform": 0,
+          "vibrato": false,
+          "tremolo": false,
+          "sustained": true
+        },
+        "modDepth": 10.573,
+        "feedback": 0.785
+      }
+    }
+  ]
+}
