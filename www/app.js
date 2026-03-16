@@ -3,8 +3,6 @@
 (async function () {
   // ── State ─────────────────────────────────────────────────────────
   let currentPreset = parseInt(localStorage.getItem('yamabruh_preset') || '0');
-  let presetInput = '';
-  let presetTimeout = null;
   let flash = 0;
   let playingSources = new Map();
   const savedMidi = JSON.parse(localStorage.getItem('yamabruh_midi') || 'null');
@@ -479,28 +477,11 @@
   }
 
   function enterDigit(d) {
-    clearTimeout(presetTimeout);
     window.synth.playClick();
-    presetInput += d;
-    const segEl = document.getElementById('seg-digits');
-
-    if (presetInput.length >= 2) {
-      const num = parseInt(presetInput);
-      selectPreset(num);
-      presetInput = '';
-    } else {
-      // Show the first digit on the LCD as it's entered
-      if (segEl) segEl.textContent = presetInput + '_';
-      const lcdInfo = document.getElementById('lcd-info');
-      if (lcdInfo) lcdInfo.textContent = '';
-      // Auto-complete after 1.5s
-      presetTimeout = setTimeout(() => {
-        if (presetInput.length === 1) {
-          selectPreset(parseInt(presetInput));
-          presetInput = '';
-        }
-      }, 1500);
-    }
+    // Shift left: current ones digit becomes tens, new digit becomes ones
+    const oldOnes = currentPreset % 10;
+    const newPreset = (oldOnes * 10) + parseInt(d);
+    selectPreset(newPreset);
   }
 
   // Voice selector buttons (only those with data-num)
@@ -761,16 +742,12 @@
     // Arrow keys for patch change
     if (e.key === 'ArrowUp') {
       e.preventDefault();
-      presetInput = '';
-      clearTimeout(presetTimeout);
       selectPreset(currentPreset + 1);
       window.synth.playClick();
       return;
     }
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      presetInput = '';
-      clearTimeout(presetTimeout);
       selectPreset(currentPreset - 1);
       window.synth.playClick();
       return;
