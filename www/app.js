@@ -80,7 +80,7 @@
     float fbm(vec2 p) {
       float v = 0.0;
       float a = 0.5;
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 3; i++) {
         v += a * noise(p);
         p *= 2.1;
         a *= 0.48;
@@ -150,21 +150,11 @@
       float fineGrn = noise(uv * 800.0);
       col += (fineGrn - 0.5) * 0.012 * u_grain;
 
-      // Scratches — tight random hairlines at varied angles
-      for (int i = 0; i < 8; i++) {
-        float fi = float(i);
-        float angle = hash(vec2(fi * 73.1, fi * 29.3)) * 3.14159;
-        float ca = cos(angle); float sa = sin(angle);
-        vec2 ruv = vec2(ca * uv.x + sa * uv.y, -sa * uv.x + ca * uv.y);
-        vec2 suv = ruv * vec2(1.2, 120.0 + fi * 40.0) + vec2(fi * 17.3, fi * 31.7);
-        float s = noise(suv);
-        col += smoothstep(0.49, 0.50, s) * 0.02 * u_scratches;
-      }
-      // Fine cross-hatching micro-scratches
-      float diag1 = noise(uv * vec2(60.0, 80.0) + vec2(uv.y * 40.0, uv.x * 15.0));
-      col += smoothstep(0.49, 0.50, diag1) * 0.012 * u_scratches;
-      float diag2 = noise(uv * vec2(80.0, 60.0) + vec2(uv.y * 15.0, -uv.x * 40.0));
-      col += smoothstep(0.49, 0.50, diag2) * 0.010 * u_scratches;
+      // Scratches — two passes, varied angles
+      float s1 = noise(vec2(uv.x * 1.2 + uv.y * 0.4, uv.y * 140.0) + 17.3);
+      col += smoothstep(0.49, 0.50, s1) * 0.025 * u_scratches;
+      float s2 = noise(vec2(uv.x * 0.6 - uv.y * 0.8, (uv.x * 0.8 + uv.y * 0.6) * 100.0) + 51.7);
+      col += smoothstep(0.49, 0.50, s2) * 0.018 * u_scratches;
 
       // Dust — heavier in corners and edges
       float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
@@ -173,17 +163,11 @@
       float dustPattern = dustBase * 0.4 + dustEdge * 0.6;
       vec3 dustCol = vec3(0.15, 0.14, 0.12);
       col = mix(col, dustCol, dustPattern * u_dust * 0.15);
-      // Dust particles — long thin fibres at random angles
-      for (int i = 0; i < 6; i++) {
-        float fi = float(i);
-        float angle = hash(vec2(fi * 53.7, fi * 91.2 + 7.0)) * 3.14159;
-        float ca = cos(angle); float sa = sin(angle);
-        vec2 ruv = vec2(ca * uv.x + sa * uv.y, -sa * uv.x + ca * uv.y);
-        // Stretch heavily on one axis for long thin fibres
-        vec2 duv = ruv * vec2(3.0, 600.0 + fi * 200.0) + vec2(fi * 43.1, fi * 67.9 + 500.0);
-        float fibre = noise(duv);
-        col += smoothstep(0.48, 0.50, fibre) * vec3(0.035, 0.03, 0.025) * u_dust;
-      }
+      // Dust fibres — two thin streaks at different angles
+      float f1 = noise(vec2(uv.x * 3.0 + uv.y * 1.5, (uv.y * 0.9 - uv.x * 0.4) * 600.0) + 543.1);
+      col += smoothstep(0.48, 0.50, f1) * vec3(0.035, 0.03, 0.025) * u_dust;
+      float f2 = noise(vec2(-uv.x * 2.0 + uv.y * 2.5, (uv.x * 0.7 + uv.y * 0.7) * 800.0) + 710.9);
+      col += smoothstep(0.48, 0.50, f2) * vec3(0.03, 0.025, 0.02) * u_dust;
       // Fine dust specks
       float specks = noise(uv * 300.0 + 500.0);
       col += smoothstep(0.72, 0.73, specks) * vec3(0.03, 0.025, 0.02) * u_dust;
@@ -207,9 +191,6 @@
 
       // Flash on key press
       col += u_flash * vec3(0.08, 0.12, 0.10);
-
-      // Breathing
-      col += sin(u_time * 0.5) * 0.003;
 
       // Overall TOD brightness
       col *= 0.7 + brightness * 0.3;
@@ -259,18 +240,21 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       gl.viewport(0, 0, canvas.width, canvas.height);
+      shaderDirty = true;
     }
     resize();
     window.addEventListener('resize', resize);
 
+    let shaderDirty = true;
+
     document.addEventListener('mousemove', e => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      shaderDirty = true;
     });
 
-    function render(t) {
-      flash *= 0.92;
-      gl.uniform1f(uTime, t * 0.001);
+    function renderOnce() {
+      gl.uniform1f(uTime, performance.now() * 0.001);
       gl.uniform2f(uRes, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouseX, canvas.height - mouseY);
       gl.uniform1f(uFlash, flash);
@@ -282,9 +266,20 @@
       gl.uniform1f(uGrain, visualConfig.grain);
       gl.uniform1f(uScratches, visualConfig.scratches);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+
+    // Render loop — only draws when dirty, then idles
+    function render() {
+      if (shaderDirty) {
+        shaderDirty = false;
+        renderOnce();
+      }
       requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+
+    // Mark dirty from outside (config changes, resize, etc.)
+    window.markShaderDirty = () => { shaderDirty = true; };
   }
 
   // ── Build Keyboard ────────────────────────────────────────────────
@@ -593,7 +588,7 @@
       saveMidiState(true, midiSelect.value || null);
       return true;
     } else {
-      document.getElementById('lcd-info').textContent = 'MIDI UNAVAILABLE';
+      document.getElementById('lcd-info').textContent = window.midiManager.lastError || 'MIDI UNAVAILABLE';
       return false;
     }
   }
@@ -1030,6 +1025,7 @@
       visualConfig[visKeys[i]] = parseFloat(slider.value);
       val.textContent = parseFloat(slider.value).toFixed(2);
       localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+      if (window.markShaderDirty) window.markShaderDirty();
     });
   });
 
@@ -1051,6 +1047,7 @@
     }
     updateTodUI();
     localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+    if (window.markShaderDirty) window.markShaderDirty();
   });
 
   todSlider.value = visualConfig.todManual;
@@ -1058,6 +1055,7 @@
     visualConfig.todManual = parseFloat(todSlider.value);
     updateTodUI();
     localStorage.setItem('yamabruh_visual', JSON.stringify(visualConfig));
+    if (window.markShaderDirty) window.markShaderDirty();
   });
 
   updateTodUI();
@@ -1071,6 +1069,7 @@
     });
     todSlider.value = DEFAULT_VISUAL.todManual;
     updateTodUI();
+    if (window.markShaderDirty) window.markShaderDirty();
   });
 
   } // end synth page guard
