@@ -14,6 +14,18 @@ final class RingtoneTests: XCTestCase {
         XCTAssertNotEqual(a, b, "Different seeds must produce different audio")
     }
 
+    func testAppSeedChangesTimbre() {
+        let a = Ringtone.generate(seed: 42, appSeed: 100)
+        let b = Ringtone.generate(seed: 42, appSeed: 200)
+        XCTAssertNotEqual(a, b, "Different app seeds must produce different audio")
+    }
+
+    func testAppSeedDeterministic() {
+        let a = Ringtone.generate(seed: 42, appSeed: 100)
+        let b = Ringtone.generate(seed: 42, appSeed: 100)
+        XCTAssertEqual(a, b, "Same app seed + id seed must be identical")
+    }
+
     func testWavHeader() {
         let wav = Ringtone.generate(seed: 1)
         XCTAssertGreaterThan(wav.count, 44, "WAV must have at least a header")
@@ -29,8 +41,14 @@ final class RingtoneTests: XCTestCase {
     }
 
     func testStringGeneration() {
-        let a = Ringtone.generate(from: "task-abc-123")
-        let b = Ringtone.generate(from: "task-abc-123")
+        let a = Ringtone.generate(from: "task-abc-123", appIdentifier: "com.example.app")
+        let b = Ringtone.generate(from: "task-abc-123", appIdentifier: "com.example.app")
         XCTAssertEqual(a, b)
+    }
+
+    func testDifferentAppsFromString() {
+        let a = Ringtone.generate(from: "task-1", appIdentifier: "ca.lucianlabs.groundcontrol")
+        let b = Ringtone.generate(from: "task-1", appIdentifier: "ca.lucianlabs.thinamp")
+        XCTAssertNotEqual(a, b, "Different apps must sound different")
     }
 }
