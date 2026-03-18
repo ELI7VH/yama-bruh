@@ -1833,7 +1833,6 @@
 
   // ── MIDI Learn Mode (global — editor + effects) ─────────────────────
   const globalLearnBtn = document.getElementById('midi-learn-global');
-  const learnBtn = document.getElementById('tweak-learn');
   let learnMode = false;
   let learnTargetId = null; // string ID of control waiting for CC
   const ccMap = JSON.parse(localStorage.getItem('yamabruh_cc_map_v2') || '{}');
@@ -1865,14 +1864,11 @@
     learnMode = on;
     learnTargetId = null;
     globalLearnBtn.classList.toggle('active', on);
-    learnBtn.classList.toggle('active', on);
-    learnBtn.textContent = on ? 'LEARNING...' : 'LEARN';
     Object.values(learnableControls).forEach(c => c.element.classList.remove('learn-target'));
     document.getElementById('lcd-info').textContent = on ? 'CLICK A FADER, THEN MOVE A KNOB' : 'LEARN OFF';
   }
 
   globalLearnBtn.addEventListener('click', () => setLearnMode(!learnMode));
-  learnBtn.addEventListener('click', () => setLearnMode(!learnMode));
 
   // Click any learnable control in learn mode → mark as target
   Object.entries(learnableControls).forEach(([id, ctrl]) => {
