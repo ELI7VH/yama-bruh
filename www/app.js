@@ -1076,20 +1076,25 @@
     localStorage.setItem(DRUM_PAD_STORAGE_KEY, JSON.stringify(drumPads));
   }
 
-  // Per-MIDI-note drum overrides — independent config per note number
-  const DRUM_NOTE_STORAGE_KEY = 'yamabruh_drum_notes_v1';
+  // Per-MIDI-note drum overrides — independent config per channel:note
+  const DRUM_NOTE_STORAGE_KEY = 'yamabruh_drum_notes_v2';
   const drumNoteConfigs = JSON.parse(localStorage.getItem(DRUM_NOTE_STORAGE_KEY) || '{}');
+  let activeDrumChannel = 12; // default first drum channel (0-indexed)
 
   function saveDrumNoteConfigs() {
     localStorage.setItem(DRUM_NOTE_STORAGE_KEY, JSON.stringify(drumNoteConfigs));
   }
 
-  function getDrumNoteConfig(note) {
-    return drumNoteConfigs[note] || null;
+  function drumNoteKey(note, channel) {
+    return (channel ?? activeDrumChannel) + ':' + note;
   }
 
-  function setDrumNoteConfig(note, config) {
-    drumNoteConfigs[note] = config;
+  function getDrumNoteConfig(note, channel) {
+    return drumNoteConfigs[drumNoteKey(note, channel)] || null;
+  }
+
+  function setDrumNoteConfig(note, config, channel) {
+    drumNoteConfigs[drumNoteKey(note, channel)] = config;
     saveDrumNoteConfigs();
   }
 
@@ -1175,14 +1180,14 @@
     return -1;
   }
 
-  function resolveDrumPadConfig(note, sound, velocity = 1) {
+  function resolveDrumPadConfig(note, sound, velocity = 1, channel) {
     const index = findDrumPadIndex(note, sound);
     if (index === -1) return null;
     const pad = drumPads[index];
     const vel = Math.max(0, Math.min(1, Number(velocity) || 0));
     const padVel = Math.max(0, Math.min(1, Number(pad.velocity) || 0));
-    // Per-note overrides take priority
-    const noteConfig = getDrumNoteConfig(note);
+    // Per-channel:note overrides take priority
+    const noteConfig = getDrumNoteConfig(note, channel);
     const baseOverrides = pad.overrides || {};
     const mergedOverrides = noteConfig
       ? { ...baseOverrides, ...noteConfig.overrides }
@@ -1237,7 +1242,7 @@
         velocity: noteConfig?.velocity ?? basePad.velocity,
         bank: noteConfig?.bank ?? basePad.bank ?? 0,
         overrides: { ...(basePad.overrides || {}), ...(noteConfig?.overrides || {}) },
-        label: 'MIDI ' + noteNum + ' / ' + (noteConfig?.sound || basePad.sound || '').toUpperCase(),
+        label: 'CH' + (activeDrumChannel + 1) + ' N' + noteNum + ' / ' + (noteConfig?.sound || basePad.sound || '').toUpperCase(),
       };
     }
     const pad = drumPads[activeDrumPad];
@@ -1449,10 +1454,11 @@
   renderDrumPads();
   updateDrumEditor();
 
-  window.resolveDrumPadConfig = ({ note, sound, velocity }) => resolveDrumPadConfig(note, sound, velocity);
+  window.resolveDrumPadConfig = ({ channel, note, sound, velocity }) => resolveDrumPadConfig(note, sound, velocity, channel);
 
-  window.midiManager.onDrumNote = ({ note, sound }) => {
-    // Switch editor to per-note mode for this MIDI note
+  window.midiManager.onDrumNote = ({ channel, note, sound }) => {
+    // Switch editor to per-note mode for this MIDI note + channel
+    activeDrumChannel = channel;
     activeMidiDrumNote = note;
     updateDrumEditor();
     const index = findDrumPadIndex(note, sound);

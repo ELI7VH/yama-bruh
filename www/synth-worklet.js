@@ -587,13 +587,17 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
 
       // ── Lowpass filter (state-variable, 2x oversampled) ────────
       if (this.filterCutoff < 19999) {
-        const f = 2 * Math.sin(Math.PI * Math.min(this.filterCutoff, sr * 0.45) / sr);
+        const f = Math.min(0.45, 2 * Math.sin(Math.PI * Math.min(this.filterCutoff, sr * 0.22) / sr));
         const q = 1 / (1 + this.filterReso * 0.0333);
-        // Two iterations for stability at high frequencies
         for (let oi = 0; oi < 2; oi++) {
           this.filterLow += f * this.filterBand;
           const high = s - this.filterLow - q * this.filterBand;
           this.filterBand += f * high;
+        }
+        // NaN guard
+        if (this.filterLow !== this.filterLow || this.filterBand !== this.filterBand) {
+          this.filterLow = 0;
+          this.filterBand = 0;
         }
         s = this.filterLow;
       }
