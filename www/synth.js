@@ -62,7 +62,7 @@ function normalizeSequenceDef(def) {
   const rawTimes = parseNumberList(config.times);
   const defaultTime = Number(config.t ?? config.time) || 1;
   const times = rawTimes.length ? rawTimes : [defaultTime];
-  const baseLength = Math.max(offsets.length, levels.length, times.length, hasAlgorithm ? 1 : 0);
+  const baseLength = Math.max(offsets.length, levels.length, hasAlgorithm ? Math.max(times.length, 1) : 0);
   const hasLayer = Array.isArray(config.layer) && config.layer.length > 0;
   const hasNoteAlgo = typeof config.noteAlgo === 'function' || (typeof config.noteAlgo === 'string' && config.noteAlgo.trim());
   if (!hasAlgorithm && !baseLength && !hasLayer && !hasNoteAlgo) return null;
