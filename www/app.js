@@ -20,14 +20,125 @@
     return customPresetNames[index] || window.synth.getPresetName(index);
   }
   const DEFAULT_SEQUENCE_DEFS = {
+    // 09 Glass Celesta — shimmering octave cascade
+    9: {
+      enabled: true, name: 'Celesta Shimmer',
+      source: '{\n  g: 0.6,\n  offsets: [0, 12, 7, 12],\n  t: 0.125,\n  levels: [1, 0.7, 0.5, 0.3],\n}',
+    },
+    // 17 Vibraphone — jazz chord spread
+    17: {
+      enabled: true, name: 'Vibes Spread',
+      source: '{\n  g: 0.85,\n  offsets: [0, 4, 7, 12],\n  t: 0.2,\n  levels: [1, 0.8, 0.6, 0.4],\n}',
+    },
+    // 18 Marimba 1 — fast roll
+    18: {
+      enabled: true, name: 'Marimba Roll',
+      source: '{\n  g: 0.5,\n  offsets: [0, 0],\n  t: 0.0625,\n  levels: [1, 0.7],\n}',
+    },
+    // 48 Banjo — bluegrass roll
+    48: {
+      enabled: true, name: 'Banjo Roll',
+      source: '{\n  g: 0.6,\n  offsets: [0, 7, 12, 7],\n  t: 0.125,\n  levels: [1, 0.8, 0.65, 0.5],\n}',
+    },
+    // 59 Music Box — descending melody
+    59: {
+      enabled: true, name: 'Music Box Melody',
+      source: '{\n  g: 0.7,\n  offsets: [12, 7, 5, 0, -5],\n  times: [0.25, 0.25, 0.25, 0.25, 0.5],\n  levels: [1, 0.85, 0.7, 0.55, 0.4],\n}',
+    },
+    // 67 Metallic Synth — rising sweep
+    67: {
+      enabled: true, name: 'Metallic Sweep',
+      source: '{\n  gated: true,\n  g: 0.9,\n  t: 0.125,\n  algorithm: ({ n, v, t, g, i }) => ({\n    n: n + 1,\n    v: v - 0.03,\n    t,\n    g,\n  }),\n}',
+    },
+    // 74 Whistle — trill
+    74: {
+      enabled: true, name: 'Whistle Trill',
+      source: '{\n  gated: true,\n  g: 0.8,\n  offsets: [0, 2],\n  t: 0.0625,\n  levels: [1, 0.9],\n}',
+    },
+    // 77 Raindrop — random drips
+    77: {
+      enabled: true, name: 'Raindrops',
+      source: '{\n  g: 0.4,\n  t: 0.2,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + floor(random() * 24 - 12),\n    v: v - 0.08,\n    t: 0.1 + random() * 0.4,\n    g,\n  }),\n}',
+    },
+    // 78 Popcorn — fast staccato
+    78: {
+      enabled: true, name: 'Popcorn',
+      source: '{\n  g: 0.3,\n  t: 0.08,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + floor(random() * 12),\n    v: v - 0.06,\n    t: 0.05 + random() * 0.1,\n    g,\n  }),\n}',
+    },
+    // 79 Drip — descending drops
+    79: {
+      enabled: true, name: 'Drip Drop',
+      source: '{\n  g: 0.4,\n  t: 0.15,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n - 2 - floor(random() * 5),\n    v: v - 0.1,\n    t: t * 1.15,\n    g,\n  }),\n}',
+    },
+    // 81 Duck — quack pattern
+    81: {
+      enabled: true, name: 'Quack',
+      source: '{\n  g: 0.5,\n  offsets: [0, 0, 3],\n  times: [0.15, 0.1, 0.25],\n  levels: [1, 0.6, 0.8],\n}',
+    },
+    // 83 Telephone Bell — classic ring
+    83: {
+      enabled: true, name: 'Phone Ring',
+      source: '{\n  g: 0.8,\n  offsets: [0, 5, 0, 5],\n  times: [0.125, 0.125, 0.125, 0.5],\n  levels: [1, 0.9, 0.8, 0.7],\n}',
+    },
+    // 84 Emergency Alarm — two-tone siren
+    84: {
+      enabled: true, name: 'Siren',
+      source: '{\n  gated: true,\n  g: 0.95,\n  t: 0.5,\n  algorithm: ({ n, v, t, g, i }) => ({\n    n: i % 2 === 0 ? n + 5 : n - 5,\n    v,\n    t,\n    g,\n  }),\n}',
+    },
+    // 85 Leaf Spring — bouncing decay
+    85: {
+      enabled: true, name: 'Spring Bounce',
+      source: '{\n  g: 0.6,\n  t: 0.2,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + 12,\n    v: v - 0.08,\n    t: t * 0.82,\n    g,\n  }),\n}',
+    },
+    // 86 Comet — rising whoosh
+    86: {
+      enabled: true, name: 'Comet Trail',
+      source: '{\n  g: 0.9,\n  t: 0.1,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + 2,\n    v: v - 0.04,\n    t: t * 1.1,\n    g: g * 0.95,\n  }),\n}',
+    },
+    // 87 Fireworks — explosive scatter
+    87: {
+      enabled: true, name: 'Firework Burst',
+      source: '{\n  g: 0.3,\n  t: 0.06,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + floor(random() * 36 - 12),\n    v: v - 0.07,\n    t: t * 1.2,\n    g,\n  }),\n}',
+    },
+    // 88 Crystal — octave cascade
     88: {
-      enabled: true,
-      name: 'Crystal Octave',
-      gated: false,
-      g: 0.82,
-      offsets: [0, 12, 0, 12],
-      times: [0.25, 0.25, 0.25, 0.5],
-      levels: [1, 0.72, 0.46, 0.24],
+      enabled: true, name: 'Crystal Octave',
+      source: '{\n  g: 0.82,\n  offsets: [0, 12, 0, 12],\n  times: [0.25, 0.25, 0.25, 0.5],\n  levels: [1, 0.72, 0.46, 0.24],\n}',
+    },
+    // 89 Ghost — eerie descend
+    89: {
+      enabled: true, name: 'Ghost Wail',
+      source: '{\n  gated: true,\n  g: 0.95,\n  t: 0.3,\n  algorithm: ({ n, v, t, g, i }) => ({\n    n: n - 1,\n    v,\n    t: t * 1.05,\n    g,\n    cents: sin(i * 0.7) * 40,\n  }),\n}',
+    },
+    // 90 Hand Bell — church toll
+    90: {
+      enabled: true, name: 'Bell Toll',
+      source: '{\n  g: 0.9,\n  offsets: [0, 0],\n  times: [1, 1],\n  levels: [1, 0.7],\n}',
+    },
+    // 91 Chimes — wind chimes
+    91: {
+      enabled: true, name: 'Wind Chimes',
+      source: '{\n  g: 0.5,\n  t: 0.2,\n  algorithm: ({ n, v, t, g }) => ({\n    n: n + floor(random() * 14),\n    v: v - 0.06,\n    t: 0.15 + random() * 0.35,\n    g,\n  }),\n}',
+    },
+    // 92 Bell — bright peal
+    92: {
+      enabled: true, name: 'Bell Peal',
+      source: '{\n  g: 0.8,\n  offsets: [0, 7, 12],\n  t: 0.3,\n  levels: [1, 0.75, 0.5],\n}',
+    },
+    // 93 Steel Drum — calypso pattern
+    93: {
+      enabled: true, name: 'Steel Pan',
+      source: '{\n  g: 0.65,\n  offsets: [0, 4, 7, 4],\n  t: 0.125,\n  levels: [1, 0.75, 0.85, 0.6],\n}',
+    },
+    // 98 Machine Gun — rapid fire
+    98: {
+      enabled: true, name: 'Machine Gun',
+      source: '{\n  gated: true,\n  g: 0.4,\n  t: 0.04,\n  algorithm: ({ n, v, t, g }) => ({\n    n,\n    v: v - 0.005,\n    t,\n    g,\n  }),\n}',
+    },
+    // 99 Wave — sustained drone
+    99: {
+      enabled: true, name: 'Wave',
+      source: '{\n  gated: true,\n  g: 0.82,\n  t: 1,\n  algorithm: ({ n, v, t, g }) => ({\n    n,\n    v,\n    t,\n    g,\n  }),\n}',
     },
   };
 
