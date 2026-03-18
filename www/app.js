@@ -768,6 +768,31 @@
   delayMixVal.textContent = delayMixEl.value;
   sendDelay();
 
+  // ── Filter UI ──────────────────────────────────────────────────────
+  const filterCutoffEl = document.getElementById('filter-cutoff');
+  const filterResoEl = document.getElementById('filter-reso');
+  const filterCutoffVal = document.getElementById('filter-cutoff-val');
+  const filterResoVal = document.getElementById('filter-reso-val');
+
+  const savedFilter = JSON.parse(localStorage.getItem('yamabruh_filter') || '{}');
+  if (savedFilter.cutoff !== undefined) filterCutoffEl.value = savedFilter.cutoff;
+  if (savedFilter.reso !== undefined) filterResoEl.value = savedFilter.reso;
+
+  function sendFilter() {
+    const cutoff = parseFloat(filterCutoffEl.value);
+    const reso = parseFloat(filterResoEl.value);
+    filterCutoffVal.textContent = cutoff >= 10000 ? (cutoff / 1000).toFixed(1) + 'k' : cutoff;
+    filterResoVal.textContent = reso.toFixed(1);
+    window.synth.setFilter(cutoff, reso);
+    localStorage.setItem('yamabruh_filter', JSON.stringify({ cutoff, reso }));
+  }
+
+  filterCutoffEl.addEventListener('input', sendFilter);
+  filterResoEl.addEventListener('input', sendFilter);
+  filterCutoffVal.textContent = filterCutoffEl.value >= 10000 ? (filterCutoffEl.value / 1000).toFixed(1) + 'k' : filterCutoffEl.value;
+  filterResoVal.textContent = parseFloat(filterResoEl.value).toFixed(1);
+  sendFilter();
+
   // ── Drum Engine Init + Rhythm UI ──────────────────────────────────
   await window.drums.init(window.synth.ctx);
 

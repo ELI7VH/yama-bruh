@@ -648,6 +648,11 @@ class YamaBruhSynth {
     }
   }
 
+  setFilter(cutoff, reso) {
+    if (!this.workletNode) return;
+    this.workletNode.port.postMessage({ type: 'filter', cutoff, reso });
+  }
+
   setDelay(beats, feedback, mix) {
     if (!this.workletNode) return;
     const timeSec = this._beatsToMs(beats) / 1000;

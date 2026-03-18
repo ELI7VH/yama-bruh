@@ -739,7 +739,7 @@ pre.code-snippet {
 .config-col {
   flex: 1;
   min-width: 280px;
-  padding-top: 126px;
+  padding-top: 56px;
 }
 
 .config-col .tweak-section {

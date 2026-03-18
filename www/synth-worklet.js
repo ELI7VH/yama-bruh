@@ -151,6 +151,11 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
     this.delayWritePos = 0;
     this.delayTimeSamples = Math.floor(sampleRate * 0.5); // default 0.5s
     this.delayFeedback = 0.3;
+    // Lowpass filter (state-variable)
+    this.filterCutoff = 20000;
+    this.filterReso = 0;
+    this.filterLow = 0;
+    this.filterBand = 0;
     this.delayMix = 0.25;
     // YM2413 LFO phases (shared across voices like hardware)
     this.tremoloPhase = 0;  // 3.7Hz AM
@@ -305,6 +310,11 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
       case 'setMaxVoices': {
         this.maxVoices = Math.max(1, Math.min(16, msg.count | 0));
         while (this.voices.length > this.maxVoices) this.voices.shift();
+        break;
+      }
+      case 'filter': {
+        if (msg.cutoff !== undefined) this.filterCutoff = Math.max(20, Math.min(20000, msg.cutoff));
+        if (msg.reso !== undefined) this.filterReso = Math.max(0, Math.min(30, msg.reso));
         break;
       }
       case 'delay': {
@@ -574,6 +584,19 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
       s = Math.round(s * dacLevels) / dacLevels;
       // Analog noise floor — subtle hiss like real hardware
       s += (Math.random() - 0.5) * 0.0012;
+
+      // ── Lowpass filter (state-variable, 2x oversampled) ────────
+      if (this.filterCutoff < 19999) {
+        const f = 2 * Math.sin(Math.PI * Math.min(this.filterCutoff, sr * 0.45) / sr);
+        const q = 1 / (1 + this.filterReso * 0.0333);
+        // Two iterations for stability at high frequencies
+        for (let oi = 0; oi < 2; oi++) {
+          this.filterLow += f * this.filterBand;
+          const high = s - this.filterLow - q * this.filterBand;
+          this.filterBand += f * high;
+        }
+        s = this.filterLow;
+      }
 
       // ── Soft-knee limiter (no compressor) ──────────────────────
       const absS = s < 0 ? -s : s;

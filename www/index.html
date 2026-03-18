@@ -17,18 +17,6 @@
   <div id="app">
   <div class="layout-columns">
     <div class="main-col">
-    <!-- Air vents -->
-    <div class="air-vents">
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-      <div class="vent-slat"></div>
-    </div>
-
     <!-- Header plate -->
     <div class="plate-header">
       <div class="brand-group">
@@ -185,6 +173,21 @@
               <label>MIX</label>
               <input type="range" min="0" max="100" step="1" value="25" id="delay-mix">
               <span class="tw-val" id="delay-mix-val">25</span>
+            </div>
+          </div>
+        </div>
+        <div class="fx-module">
+          <div class="fx-module-label">FILTER</div>
+          <div class="fx-knobs">
+            <div class="fx-knob-group">
+              <label>CUTOFF</label>
+              <input type="range" min="20" max="20000" step="1" value="20000" id="filter-cutoff">
+              <span class="tw-val" id="filter-cutoff-val">20000</span>
+            </div>
+            <div class="fx-knob-group">
+              <label>RESO</label>
+              <input type="range" min="0" max="30" step="0.1" value="0" id="filter-reso">
+              <span class="tw-val" id="filter-reso-val">0.0</span>
             </div>
           </div>
         </div>
