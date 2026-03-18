@@ -1491,6 +1491,7 @@
     const handler = () => saveSequenceEditor();
     field.addEventListener('input', handler);
     field.addEventListener('change', handler);
+    field.addEventListener('paste', () => setTimeout(handler, 0));
   });
 
   ['keydown', 'keypress', 'keyup'].forEach((eventName) => {

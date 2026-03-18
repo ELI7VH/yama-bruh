@@ -14,6 +14,7 @@ function parseNumberList(value) {
   }
   return String(value || '')
     .split(/[,\s]+/)
+    .filter(s => s !== '')
     .map(Number)
     .filter(Number.isFinite);
 }
