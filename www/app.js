@@ -143,7 +143,7 @@
     // 98 Machine Gun — rapid fire
     98: {
       enabled: true, name: 'Machine Gun',
-      source: '{\n  gated: true,\n  g: 0.4,\n  t: 0.04,\n  algorithm: ({ n, v, t, g }) => ({\n    n,\n    v: v - 0.005,\n    t,\n    g,\n  }),\n}',
+      source: '{\n  gated: true,\n  g: 0.1,\n  t: 0.2,\n  algorithm: ({ n, v, t, g }) => ({\n    n,\n    v: v - 0.005,\n    t,\n    g,\n  }),\n}',
     },
     // 99 Wave — sustained drone
     99: {
