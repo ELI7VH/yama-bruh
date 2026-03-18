@@ -1076,6 +1076,23 @@
     localStorage.setItem(DRUM_PAD_STORAGE_KEY, JSON.stringify(drumPads));
   }
 
+  // Per-MIDI-note drum overrides — independent config per note number
+  const DRUM_NOTE_STORAGE_KEY = 'yamabruh_drum_notes_v1';
+  const drumNoteConfigs = JSON.parse(localStorage.getItem(DRUM_NOTE_STORAGE_KEY) || '{}');
+
+  function saveDrumNoteConfigs() {
+    localStorage.setItem(DRUM_NOTE_STORAGE_KEY, JSON.stringify(drumNoteConfigs));
+  }
+
+  function getDrumNoteConfig(note) {
+    return drumNoteConfigs[note] || null;
+  }
+
+  function setDrumNoteConfig(note, config) {
+    drumNoteConfigs[note] = config;
+    saveDrumNoteConfigs();
+  }
+
   function normalizeDrumKey(value) {
     return String(value || '').slice(0, 2).trim().toLowerCase();
   }
@@ -1125,6 +1142,7 @@
   };
   const drumPads = loadDrumPads();
   let activeDrumPad = 0;
+  let activeMidiDrumNote = null; // when set, editor targets per-note config instead of pad
   const activeDrumKeys = new Set();
 
   function formatDrumKey(value) {
@@ -1163,18 +1181,25 @@
     const pad = drumPads[index];
     const vel = Math.max(0, Math.min(1, Number(velocity) || 0));
     const padVel = Math.max(0, Math.min(1, Number(pad.velocity) || 0));
+    // Per-note overrides take priority
+    const noteConfig = getDrumNoteConfig(note);
+    const baseOverrides = pad.overrides || {};
+    const mergedOverrides = noteConfig
+      ? { ...baseOverrides, ...noteConfig.overrides }
+      : { ...baseOverrides };
     return {
-      sound: pad.sound,
+      sound: noteConfig?.sound || pad.sound,
       note,
-      bank: pad.bank ?? 0,
-      velocity: Math.max(0.001, Math.min(1, vel * padVel)),
-      overrides: { ...(pad.overrides || {}) },
+      bank: noteConfig?.bank ?? pad.bank ?? 0,
+      velocity: Math.max(0.001, Math.min(1, vel * (noteConfig?.velocity ?? padVel))),
+      overrides: mergedOverrides,
     };
   }
 
   function setActiveDrumPad(index, options = {}) {
     if (index < 0 || index >= drumPads.length) return;
     activeDrumPad = index;
+    activeMidiDrumNote = null; // back to pad mode
     updateDrumEditor();
     if (options.flash) flashDrumPad(index);
   }
@@ -1197,31 +1222,63 @@
     `).join('');
   }
 
-  function updateDrumEditor() {
+  function getEditorTarget() {
+    if (activeMidiDrumNote !== null) {
+      const noteNum = activeMidiDrumNote;
+      const noteConfig = getDrumNoteConfig(noteNum);
+      // Find base pad for defaults
+      const padIdx = findDrumPadIndex(noteNum);
+      const basePad = padIdx !== -1 ? drumPads[padIdx] : drumPads[0];
+      return {
+        isNote: true,
+        noteNum,
+        sound: noteConfig?.sound || basePad.sound,
+        note: noteNum,
+        velocity: noteConfig?.velocity ?? basePad.velocity,
+        bank: noteConfig?.bank ?? basePad.bank ?? 0,
+        overrides: { ...(basePad.overrides || {}), ...(noteConfig?.overrides || {}) },
+        label: 'MIDI ' + noteNum + ' / ' + (noteConfig?.sound || basePad.sound || '').toUpperCase(),
+      };
+    }
     const pad = drumPads[activeDrumPad];
-    if (!pad) return;
-    drumEditorName.textContent = 'KEY ' + formatDrumKey(pad.key) + ' / ' + (pad.sound || '').toUpperCase();
-    drumFields.key.value = formatDrumKey(pad.key);
-    drumFields.sound.value = pad.sound;
-    drumFields.note.value = pad.note;
-    drumFields.pitchSemis.value = pad.overrides.pitchSemis ?? 0;
-    drumFields.velocity.value = pad.velocity;
-    drumFields.bank.value = pad.bank;
-    drumFields.decay.value = pad.overrides.decay ?? 0.25;
-    drumFields.modIndex.value = pad.overrides.modIndex ?? 3;
-    drumFields.pitchSweep.value = pad.overrides.pitchSweep ?? 0;
-    drumFields.pitchDecay.value = pad.overrides.pitchDecay ?? 0.015;
-    drumFields.noiseAmt.value = pad.overrides.noiseAmt ?? 0;
-    drumFields.clickAmt.value = pad.overrides.clickAmt ?? 0.3;
-    drumFields.carrierFreq.value = pad.overrides.carrierFreq ?? 60;
-    drumFields.modFreq.value = pad.overrides.modFreq ?? 90;
+    return {
+      isNote: false,
+      sound: pad.sound,
+      note: pad.note,
+      velocity: pad.velocity,
+      bank: pad.bank ?? 0,
+      overrides: pad.overrides || {},
+      key: pad.key,
+      label: 'KEY ' + formatDrumKey(pad.key) + ' / ' + (pad.sound || '').toUpperCase(),
+    };
+  }
 
-    drumVals.key.textContent = formatDrumKey(pad.key);
-    drumVals.sound.textContent = pad.sound;
-    drumVals.note.textContent = String(pad.note);
+  function updateDrumEditor() {
+    const t = getEditorTarget();
+    drumEditorName.textContent = t.label;
+    drumFields.key.value = t.isNote ? '' : formatDrumKey(t.key);
+    drumFields.key.disabled = t.isNote;
+    drumFields.sound.value = t.sound;
+    drumFields.note.value = t.note;
+    drumFields.note.disabled = t.isNote;
+    drumFields.pitchSemis.value = t.overrides.pitchSemis ?? 0;
+    drumFields.velocity.value = t.velocity;
+    drumFields.bank.value = t.bank;
+    drumFields.decay.value = t.overrides.decay ?? 0.25;
+    drumFields.modIndex.value = t.overrides.modIndex ?? 3;
+    drumFields.pitchSweep.value = t.overrides.pitchSweep ?? 0;
+    drumFields.pitchDecay.value = t.overrides.pitchDecay ?? 0.015;
+    drumFields.noiseAmt.value = t.overrides.noiseAmt ?? 0;
+    drumFields.clickAmt.value = t.overrides.clickAmt ?? 0.3;
+    drumFields.carrierFreq.value = t.overrides.carrierFreq ?? 60;
+    drumFields.modFreq.value = t.overrides.modFreq ?? 90;
+
+    drumVals.key.textContent = t.isNote ? 'N' + t.noteNum : formatDrumKey(t.key);
+    drumVals.sound.textContent = t.sound;
+    drumVals.note.textContent = String(t.note);
     drumVals.pitchSemis.textContent = String(Math.round(Number(drumFields.pitchSemis.value)));
-    drumVals.velocity.textContent = Number(pad.velocity).toFixed(2);
-    drumVals.bank.textContent = window.drums.getBankName(pad.bank);
+    drumVals.velocity.textContent = Number(t.velocity).toFixed(2);
+    drumVals.bank.textContent = window.drums.getBankName(t.bank);
     drumVals.decay.textContent = Number(drumFields.decay.value).toFixed(3);
     drumVals.modIndex.textContent = Number(drumFields.modIndex.value).toFixed(2);
     drumVals.pitchSweep.textContent = String(Math.round(Number(drumFields.pitchSweep.value)));
@@ -1234,6 +1291,30 @@
   }
 
   function writeActiveDrumPad(fieldName) {
+    if (activeMidiDrumNote !== null) {
+      // Per-note mode — write to drumNoteConfigs
+      const noteNum = activeMidiDrumNote;
+      const existing = getDrumNoteConfig(noteNum) || { overrides: {} };
+      if (!existing.overrides) existing.overrides = {};
+      switch (fieldName) {
+        case 'sound': existing.sound = drumFields.sound.value; break;
+        case 'velocity': existing.velocity = parseFloat(drumFields.velocity.value); break;
+        case 'bank': existing.bank = parseInt(drumFields.bank.value, 10); break;
+        case 'pitchSemis': existing.overrides.pitchSemis = parseInt(drumFields.pitchSemis.value, 10); break;
+        case 'decay': existing.overrides.decay = parseFloat(drumFields.decay.value); break;
+        case 'modIndex': existing.overrides.modIndex = parseFloat(drumFields.modIndex.value); break;
+        case 'pitchSweep': existing.overrides.pitchSweep = parseFloat(drumFields.pitchSweep.value); break;
+        case 'pitchDecay': existing.overrides.pitchDecay = parseFloat(drumFields.pitchDecay.value); break;
+        case 'noiseAmt': existing.overrides.noiseAmt = parseFloat(drumFields.noiseAmt.value); break;
+        case 'clickAmt': existing.overrides.clickAmt = parseFloat(drumFields.clickAmt.value); break;
+        case 'carrierFreq': existing.overrides.carrierFreq = parseFloat(drumFields.carrierFreq.value); break;
+        case 'modFreq': existing.overrides.modFreq = parseFloat(drumFields.modFreq.value); break;
+        default: return;
+      }
+      setDrumNoteConfig(noteNum, existing);
+      updateDrumEditor();
+      return;
+    }
     const pad = drumPads[activeDrumPad];
     if (!pad) return;
     switch (fieldName) {
@@ -1318,13 +1399,21 @@
 
   drumPreviewBtn.addEventListener('click', () => previewDrumPad(activeDrumPad));
   drumPadResetBtn.addEventListener('click', () => {
-    drumPads[activeDrumPad] = makePadConfig(DEFAULT_DRUM_PADS[activeDrumPad % DEFAULT_DRUM_PADS.length]);
-    saveDrumPads();
+    if (activeMidiDrumNote !== null) {
+      delete drumNoteConfigs[activeMidiDrumNote];
+      saveDrumNoteConfigs();
+    } else {
+      drumPads[activeDrumPad] = makePadConfig(DEFAULT_DRUM_PADS[activeDrumPad % DEFAULT_DRUM_PADS.length]);
+      saveDrumPads();
+    }
     updateDrumEditor();
   });
   drumPadsResetAllBtn.addEventListener('click', () => {
     for (let i = 0; i < drumPads.length; i++) drumPads[i] = makePadConfig(DEFAULT_DRUM_PADS[i % DEFAULT_DRUM_PADS.length]);
+    Object.keys(drumNoteConfigs).forEach(k => delete drumNoteConfigs[k]);
     saveDrumPads();
+    saveDrumNoteConfigs();
+    activeMidiDrumNote = null;
     updateDrumEditor();
   });
 
@@ -1334,9 +1423,11 @@
   window.resolveDrumPadConfig = ({ note, sound, velocity }) => resolveDrumPadConfig(note, sound, velocity);
 
   window.midiManager.onDrumNote = ({ note, sound }) => {
+    // Switch editor to per-note mode for this MIDI note
+    activeMidiDrumNote = note;
+    updateDrumEditor();
     const index = findDrumPadIndex(note, sound);
-    if (index === -1) return;
-    setActiveDrumPad(index, { flash: true });
+    if (index !== -1) flashDrumPad(index);
   };
 
   function playDrumKey(keyValue) {
