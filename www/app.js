@@ -9,6 +9,16 @@
   const savedMidi = JSON.parse(localStorage.getItem('yamabruh_midi') || 'null');
   const SEQUENCE_STORAGE_KEY = 'yamabruh_sequences_v1';
   const VOICE_BANK_STORAGE_KEY = 'yamabruh_voice_bank_v1';
+  const PRESET_NAMES_STORAGE_KEY = 'yamabruh_preset_names';
+  const customPresetNames = JSON.parse(localStorage.getItem(PRESET_NAMES_STORAGE_KEY) || '{}');
+
+  function persistPresetNames() {
+    localStorage.setItem(PRESET_NAMES_STORAGE_KEY, JSON.stringify(customPresetNames));
+  }
+
+  function getPresetDisplayName(index) {
+    return customPresetNames[index] || window.synth.getPresetName(index);
+  }
   const DEFAULT_SEQUENCE_DEFS = {
     88: {
       enabled: true,
@@ -16,7 +26,7 @@
       loop: false,
       gate: 0.82,
       offsets: [0, 12, 0, 12],
-      times: [90, 80, 80, 150],
+      times: [0.25, 0.25, 0.25, 0.5],
       levels: [1, 0.72, 0.46, 0.24],
     },
   };
@@ -59,12 +69,24 @@
 
   // ── Build Voice Bank ──────────────────────────────────────────────
   const vbGrid = document.getElementById('voice-bank-grid');
+  const presetNameInput = document.getElementById('preset-name-input');
+
+  function updateVoiceBankEntry(index) {
+    if (!vbGrid) return;
+    const entry = vbGrid.querySelector(`[data-preset="${index}"]`);
+    if (!entry) return;
+    const num = String(index).padStart(2, '0');
+    const nameSpan = entry.querySelector('.vb-name');
+    if (nameSpan) nameSpan.textContent = getPresetDisplayName(index);
+    else entry.innerHTML = `<span class="vb-num">${num}</span><span class="vb-name">${getPresetDisplayName(index)}</span>`;
+  }
+
   if (vbGrid) PRESET_NAMES.forEach((name, i) => {
     const entry = document.createElement('div');
     entry.className = 'vb-entry' + (i === 0 ? ' active' : '');
     entry.dataset.preset = i;
     const num = String(i).padStart(2, '0');
-    entry.innerHTML = `<span class="vb-num">${num}</span>${name}`;
+    entry.innerHTML = `<span class="vb-num">${num}</span><span class="vb-name">${getPresetDisplayName(i)}</span>`;
     entry.addEventListener('click', () => {
       selectPreset(i);
       window.synth.playClick();
@@ -72,6 +94,29 @@
     vbGrid.appendChild(entry);
   });
 
+  function loadPresetNameInput() {
+    if (presetNameInput) {
+      presetNameInput.value = customPresetNames[currentPreset] || '';
+      presetNameInput.placeholder = window.synth.getPresetName(currentPreset);
+    }
+  }
+
+  if (presetNameInput) {
+    presetNameInput.addEventListener('input', () => {
+      const val = presetNameInput.value.trim();
+      if (val) customPresetNames[currentPreset] = val;
+      else delete customPresetNames[currentPreset];
+      persistPresetNames();
+      updateVoiceBankEntry(currentPreset);
+      const lcdInfo = document.getElementById('lcd-info');
+      if (lcdInfo) lcdInfo.textContent = getPresetDisplayName(currentPreset);
+    });
+    ['keydown', 'keypress', 'keyup'].forEach((ev) => {
+      presetNameInput.addEventListener(ev, (e) => e.stopPropagation());
+    });
+  }
+
+  loadPresetNameInput();
   updateDisplay();
 
   // ── GLSL Background ──────────────────────────────────────────────
@@ -512,13 +557,12 @@
     window.synth._sendPreset();
     localStorage.setItem('yamabruh_preset', currentPreset);
     const lcdInfo = document.getElementById('lcd-info');
-    if (lcdInfo) lcdInfo.textContent = window.synth.getPresetName(currentPreset);
-    // Reload tweak sliders if open
+    if (lcdInfo) lcdInfo.textContent = getPresetDisplayName(currentPreset);
+    loadPresetNameInput();
+    // Reload tweak sliders
     const tb = document.getElementById('tweak-body');
-    if (tb && tb.classList.contains('open')) {
-      loadTweakFromPreset();
-      loadSequenceEditor();
-    }
+    if (tb && tb.classList.contains('open')) loadTweakFromPreset();
+    loadSequenceEditor();
     // Auto-save preset to active MIDI channel
     if (window.midiManager && window.midiManager.connected) {
       const ch = window.midiManager.activeChannel;
@@ -691,6 +735,39 @@
   // Apply on init
   applyFxState();
 
+  // ── Delay Effect UI ────────────────────────────────────────────────
+  const delayTimeEl = document.getElementById('delay-time');
+  const delayFeedbackEl = document.getElementById('delay-feedback');
+  const delayMixEl = document.getElementById('delay-mix');
+  const delayFbVal = document.getElementById('delay-feedback-val');
+  const delayMixVal = document.getElementById('delay-mix-val');
+
+  const savedDelay = JSON.parse(localStorage.getItem('yamabruh_delay') || '{}');
+  if (savedDelay.time) delayTimeEl.value = savedDelay.time;
+  if (savedDelay.feedback !== undefined) delayFeedbackEl.value = savedDelay.feedback;
+  if (savedDelay.mix !== undefined) delayMixEl.value = savedDelay.mix;
+
+  function sendDelay() {
+    const beats = parseFloat(delayTimeEl.value);
+    const feedback = parseInt(delayFeedbackEl.value);
+    const mix = parseInt(delayMixEl.value);
+    delayFbVal.textContent = feedback;
+    delayMixVal.textContent = mix;
+    window.synth.setDelay(beats, feedback, mix);
+    localStorage.setItem('yamabruh_delay', JSON.stringify({
+      time: delayTimeEl.value, feedback, mix,
+    }));
+  }
+
+  delayTimeEl.addEventListener('change', sendDelay);
+  delayFeedbackEl.addEventListener('input', sendDelay);
+  delayMixEl.addEventListener('input', sendDelay);
+
+  // Init delay values from saved state
+  delayFbVal.textContent = delayFeedbackEl.value;
+  delayMixVal.textContent = delayMixEl.value;
+  sendDelay();
+
   // ── Drum Engine Init + Rhythm UI ──────────────────────────────────
   await window.drums.init(window.synth.ctx);
 
@@ -700,6 +777,7 @@
 
   window.drums.setPattern(drumPattern);
   window.drums.setBpm(drumBpm);
+  window.synth.setBpm(drumBpm);
 
   const rhythmDisplay = document.getElementById('rhythm-display');
   const tempoDisplay = document.getElementById('tempo-display');
@@ -762,6 +840,8 @@
   document.getElementById('tempo-down').addEventListener('click', () => {
     drumBpm = Math.max(60, drumBpm - 4);
     window.drums.setBpm(drumBpm);
+    window.synth.setBpm(drumBpm);
+    sendDelay();
     tempoDisplay.innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
     saveDrumState();
   });
@@ -769,6 +849,8 @@
   document.getElementById('tempo-up').addEventListener('click', () => {
     drumBpm = Math.min(240, drumBpm + 4);
     window.drums.setBpm(drumBpm);
+    window.synth.setBpm(drumBpm);
+    sendDelay();
     tempoDisplay.innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
     saveDrumState();
   });
@@ -1286,10 +1368,10 @@
     if (!def) return '';
     if (typeof def.source === 'string' && def.source.trim()) return def.source.trim();
     const lines = ['{'];
-    ['loop', 'gate', 'offsets', 'times', 'levels', 'algorithm'].forEach((key) => {
+    ['loop', 'gate', 'n', 'v', 't', 'g', 'cents', 'offsets', 'times', 'levels', 'algorithm', 'noteAlgo'].forEach((key) => {
       const value = def[key];
       if (value === undefined || value === null || value === '') return;
-      const formatted = key === 'algorithm' && typeof value === 'string'
+      const formatted = (key === 'algorithm' || key === 'noteAlgo') && typeof value === 'string'
         ? value
         : formatSequenceSourceValue(value);
       if (formatted === null) return;
@@ -1304,7 +1386,7 @@
       '{',
       '  loop: false,',
       '  gate: 0.82,',
-      '  times: [120],',
+      '  times: [0.25],',
       '  algorithm: ({ n, v, t, g }) => ({',
       '    n: n,',
       '    v: v - 0.1,',
@@ -1356,6 +1438,7 @@
 
   Object.keys(DEFAULT_SEQUENCE_DEFS).forEach((key) => syncSequenceToSynth(Number(key)));
   Object.keys(sequenceDefs).forEach((key) => syncSequenceToSynth(Number(key)));
+  loadSequenceEditor();
 
   function currentSequenceFromEditor() {
     if (!seqFields.enabled.checked) return null;
@@ -1372,7 +1455,7 @@
 
   function updateSequenceReadout(def) {
     seqVals.enabled.textContent = def && def.enabled ? 'ON' : 'OFF';
-    seqVals.source.textContent = def?.source ? 'OBJECT SOURCE' : '--';
+    if (seqVals.source) seqVals.source.textContent = def?.source ? 'OBJECT SOURCE' : '--';
   }
 
   function loadSequenceEditor() {
@@ -1402,6 +1485,16 @@
     seqFields.source.addEventListener(eventName, (event) => {
       event.stopPropagation();
     });
+  });
+
+  document.getElementById('seq-basic').addEventListener('click', () => {
+    sequenceDefs[currentPreset] = {
+      enabled: true,
+      source: defaultSequenceSource(),
+    };
+    persistSequenceDefs();
+    syncSequenceToSynth(currentPreset);
+    loadSequenceEditor();
   });
 
   seqCrystalBtn.addEventListener('click', () => {
@@ -1554,6 +1647,49 @@
     selectPreset(preset);
   };
 
+  // ── Key Sequence Toggle ─────────────────────────────────────────────
+  const seqToggle = document.getElementById('seq-toggle');
+  const seqBody = document.getElementById('seq-body');
+  seqToggle.addEventListener('click', () => {
+    const open = seqBody.classList.toggle('open');
+    seqToggle.classList.toggle('open', open);
+    seqToggle.innerHTML = 'KEY SEQUENCE ' + (open ? '&#9650;' : '&#9660;');
+  });
+
+  // Choke same notes toggle
+  const seqChokeEl = document.getElementById('seq-choke');
+  const seqChokeVal = document.getElementById('seq-choke-val');
+  const savedChoke = localStorage.getItem('yamabruh_choke') === '1';
+  seqChokeEl.checked = savedChoke;
+  seqChokeVal.textContent = savedChoke ? 'ON' : 'OFF';
+  if (window.synth.workletNode) {
+    window.synth.workletNode.port.postMessage({ type: 'chokeSameNotes', on: savedChoke });
+  }
+  seqChokeEl.addEventListener('change', () => {
+    const on = seqChokeEl.checked;
+    seqChokeVal.textContent = on ? 'ON' : 'OFF';
+    localStorage.setItem('yamabruh_choke', on ? '1' : '0');
+    if (window.synth.workletNode) {
+      window.synth.workletNode.port.postMessage({ type: 'chokeSameNotes', on });
+    }
+  });
+
+  // Hint toggle
+  const seqHintBtn = document.getElementById('seq-hint-btn');
+  const seqHint = document.getElementById('seq-hint');
+  seqHintBtn.addEventListener('click', () => {
+    seqHint.style.display = seqHint.style.display === 'none' ? 'block' : 'none';
+  });
+
+  // ── MIDI Channels Toggle ────────────────────────────────────────────
+  const midiChToggle = document.getElementById('midi-ch-toggle');
+  const midiChBody = document.getElementById('midi-ch-body');
+  midiChToggle.addEventListener('click', () => {
+    const open = midiChBody.classList.toggle('open');
+    midiChToggle.classList.toggle('open', open);
+    midiChToggle.innerHTML = 'MIDI CHANNELS ' + (open ? '&#9650;' : '&#9660;');
+  });
+
   // ── Visual Config UI ──────────────────────────────────────────────
   const visualToggle = document.getElementById('visual-toggle');
   const visualBody = document.getElementById('visual-body');
@@ -1630,6 +1766,7 @@
     version: 1,
     currentPreset,
     voiceBankEdits,
+    customPresetNames,
     sequenceDefs,
     drumPads,
     drumPattern,
@@ -1678,6 +1815,7 @@
     if (Number.isFinite(state.drumBpm)) {
       drumBpm = Math.max(60, Math.min(240, state.drumBpm));
       window.drums.setBpm(drumBpm);
+      window.synth.setBpm(drumBpm);
       document.getElementById('tempo-display').innerHTML = drumBpm + ' <span class="tempo-label">BPM</span>';
     }
 

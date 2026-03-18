@@ -146,6 +146,12 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
     super();
     this.voices = [];
     this.preset = makePreset();
+    // Delay effect — max 2 beats at 60 BPM = 2 seconds, but allow up to 4s for safety
+    this.delayBuffer = new Float32Array(Math.ceil(sampleRate * 4));
+    this.delayWritePos = 0;
+    this.delayTimeSamples = Math.floor(sampleRate * 0.5); // default 0.5s
+    this.delayFeedback = 0.3;
+    this.delayMix = 0.25;
     // YM2413 LFO phases (shared across voices like hardware)
     this.tremoloPhase = 0;  // 3.7Hz AM
     this.chipVibPhase = 0;  // 6.4Hz pitch
@@ -229,6 +235,8 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
           mes: 0, mel: ENV_FLOOR,
           sustainOn: !!msg.sustain,
           age: 0,
+          sampleIndex: 0,
+          noteAlgo: compileNoteAlgo(msg.noteAlgo),
           p: normalizePreset(msg.preset || this.preset),
         });
         break;
@@ -297,6 +305,12 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
       case 'setMaxVoices': {
         this.maxVoices = Math.max(1, Math.min(16, msg.count | 0));
         while (this.voices.length > this.maxVoices) this.voices.shift();
+        break;
+      }
+      case 'delay': {
+        if (msg.timeSamples !== undefined) this.delayTimeSamples = Math.max(1, Math.min(this.delayBuffer.length - 1, msg.timeSamples | 0));
+        if (msg.feedback !== undefined) this.delayFeedback = Math.max(0, Math.min(0.98, msg.feedback));
+        if (msg.mix !== undefined) this.delayMix = Math.max(0, Math.min(1, msg.mix));
         break;
       }
       case 'healthCheck': {
@@ -404,8 +418,16 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
           v.curFreq = v.freq;
         }
 
-        // Apply pitch bend to base frequency
-        const baseFreq = v.curFreq * pbMult;
+        // Apply pitch bend + noteAlgo to base frequency
+        let noteAlgoCents = 0;
+        if (v.noteAlgo) {
+          try {
+            const result = v.noteAlgo({ time: v.age, i: v.sampleIndex, freq: v.curFreq, v: v.velocity, n: v.note, dt });
+            noteAlgoCents = typeof result === 'number' ? result : (result?.cents ?? 0);
+          } catch (_) { v.noteAlgo = null; }
+        }
+        v.sampleIndex++;
+        const baseFreq = v.curFreq * pbMult * (noteAlgoCents !== 0 ? Math.pow(2, noteAlgoCents / 1200) : 1);
 
         // Mod wheel can still boost mod index in the extended control path.
         const mi = modTgt === 'modIndex' ? p.modDepth * (1 + modW * 3) : p.modDepth;
@@ -563,6 +585,19 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
       if (s > 0.95) s = 0.95;
       else if (s < -0.95) s = -0.95;
 
+      // ── Delay effect ─────────────────────────────────────────────
+      const dBuf = this.delayBuffer;
+      const dLen = dBuf.length;
+      const dTime = this.delayTimeSamples;
+      const dFb = this.delayFeedback;
+      const dMix = this.delayMix;
+      let readPos = this.delayWritePos - dTime;
+      if (readPos < 0) readPos += dLen;
+      const delayed = dBuf[readPos];
+      dBuf[this.delayWritePos] = s + delayed * dFb;
+      this.delayWritePos = (this.delayWritePos + 1) % dLen;
+      s = s * (1 - dMix) + delayed * dMix;
+
       out[i] = s;
     }
 
@@ -586,6 +621,16 @@ function _waveform(phase, type, noise) {
     case 5: return (Math.sin(phase) + (noise || 0)) * 0.5; // tone + noise mix
     default: return Math.sin(phase);
   }
+}
+
+// ── noteAlgo compilation ──────────────────────────────────────────────
+const _MATH_PREAMBLE = 'const{sin,cos,abs,floor,ceil,round,min,max,pow,sqrt,log,exp,random}=Math;const PI=Math.PI;const TAU=2*Math.PI;function clamp(v,lo,hi){return v<lo?lo:v>hi?hi:v;}';
+
+function compileNoteAlgo(source) {
+  if (!source || typeof source !== 'string') return null;
+  try {
+    return new Function(_MATH_PREAMBLE + 'return (' + source + ');')();
+  } catch (e) { return null; }
 }
 
 registerProcessor('yambruh-synth', YamaBruhProcessor);

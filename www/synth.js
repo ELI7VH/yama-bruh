@@ -18,11 +18,13 @@ function parseNumberList(value) {
     .filter(Number.isFinite);
 }
 
+const SEQ_MATH_PREAMBLE = 'const{sin,cos,abs,floor,ceil,round,min,max,pow,sqrt,log,exp,random}=Math;const PI=Math.PI;const TAU=2*Math.PI;function clamp(v,lo,hi){return v<lo?lo:v>hi?hi:v;}';
+
 function compileSequenceAlgorithm(source) {
   const text = String(source || '').trim();
   if (!text) return null;
   try {
-    const fn = new Function(`return (${text});`)();
+    const fn = new Function(`${SEQ_MATH_PREAMBLE}return (${text});`)();
     return typeof fn === 'function' ? fn : null;
   } catch (error) {
     console.error('[SEQ ALGO] Invalid algorithm:', error);
@@ -34,7 +36,7 @@ function compileSequenceSource(source) {
   const text = String(source || '').trim();
   if (!text) return null;
   try {
-    const value = new Function(`return (${text});`)();
+    const value = new Function(`${SEQ_MATH_PREAMBLE}return (${text});`)();
     return value && typeof value === 'object' ? value : null;
   } catch (error) {
     console.error('[SEQ SOURCE] Invalid sequence object:', error);
@@ -55,13 +57,14 @@ function normalizeSequenceDef(def) {
     : compileSequenceAlgorithm(algorithm);
   const hasAlgorithm = typeof algorithmFn === 'function';
   const offsets = parseNumberList(config.offsets);
-  const times = parseNumberList(config.times);
   const levels = parseNumberList(config.levels);
-  if (hasAlgorithm && !algorithmFn) return null;
   if (!hasAlgorithm && !offsets.length) return null;
   const baseLength = Math.max(offsets.length, 1);
-  const stepTimes = Array.from({ length: baseLength }, (_, i) => clamp(times[i] ?? times[times.length - 1] ?? 120, 20, 4000));
+  const rawTimes = parseNumberList(config.times);
+  const defaultTime = Number(config.time) || 1;
+  const times = rawTimes.length ? rawTimes : [defaultTime];
   const stepLevels = Array.from({ length: baseLength }, (_, i) => clamp(levels[i] ?? levels[levels.length - 1] ?? 1, 0.01, 2));
+  const stepTimes = Array.from({ length: baseLength }, (_, i) => clamp(times[i % times.length], 0.01, 8));
   return {
     enabled: true,
     name: String(def.name || config.name || ''),
@@ -70,6 +73,13 @@ function normalizeSequenceDef(def) {
     offsets,
     times: stepTimes,
     levels: stepLevels,
+    defaultTime: clamp(defaultTime, 0.01, 8),
+    initT: Number.isFinite(Number(config.t)) ? clamp(Number(config.t), 0.01, 8) : null,
+    initG: Number.isFinite(Number(config.g)) ? clamp(Number(config.g), 0.05, 1.5) : null,
+    initV: Number.isFinite(Number(config.v)) ? clamp(Number(config.v), 0.001, 2) : null,
+    initN: Number.isFinite(Number(config.n)) ? Number(config.n) : null,
+    initCents: Number.isFinite(Number(config.cents)) ? Number(config.cents) : 0,
+    noteAlgo: typeof config.noteAlgo === 'function' ? config.noteAlgo.toString() : (typeof config.noteAlgo === 'string' ? config.noteAlgo.trim() : null),
     source: typeof def.source === 'string' ? def.source : '',
     algorithm: typeof algorithmValue === 'function' ? algorithmValue.toString() : algorithm,
     algorithmFn,
@@ -113,6 +123,11 @@ class YamaBruhSynth {
     this._activeSequences = new Map();
     this._noteEndListeners = new Map();
     this._sequenceCounter = 1;
+    this.bpm = 120;
+  }
+
+  setBpm(bpm) {
+    this.bpm = clamp(Number(bpm) || 120, 20, 400);
   }
 
   async init() {
@@ -267,16 +282,13 @@ class YamaBruhSynth {
     });
   }
 
-  _postNoteOn(noteId, midiNote, velocity, preset) {
+  _postNoteOn(noteId, midiNote, velocity, preset, cents = 0, noteAlgo = null, sustain = false) {
     if (!this.workletNode) return noteId;
-    const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
-    this.workletNode.port.postMessage({
-      type: 'noteOn',
-      note: noteId,
-      freq,
-      velocity,
-      preset,
-    });
+    const freq = 440 * Math.pow(2, (midiNote - 69 + cents / 100) / 12);
+    const msg = { type: 'noteOn', note: noteId, freq, velocity, preset };
+    if (noteAlgo) msg.noteAlgo = noteAlgo;
+    if (sustain) msg.sustain = true;
+    this.workletNode.port.postMessage(msg);
     return noteId;
   }
 
@@ -288,9 +300,37 @@ class YamaBruhSynth {
     });
   }
 
+  _beatsToMs(beats) {
+    return (60000 / this.bpm) * beats;
+  }
+
+  // Sound param names → 21-param array indices
+  static SOUND_PARAM_MAP = {
+    cRatio: 0, mRatio: 1, mDepth: 2,
+    cAttack: 3, cDecay: 4, cSustain: 5, cRelease: 6,
+    mFeedback: 7, cWave: 8, mWave: 9,
+    tremolo: 10, vibrato: 11, ksr: 12, ksl: 13,
+    modLevel: 14, cEgType: 15,
+    mAttack: 16, mDecay: 17, mSustain: 18, mRelease: 19, mEgType: 20,
+  };
+
+  _applyAlgoPreset(basePreset, step) {
+    if (!step || typeof step !== 'object') return basePreset;
+    const map = YamaBruhSynth.SOUND_PARAM_MAP;
+    let modified = null;
+    for (const key in map) {
+      const val = step[key];
+      if (val !== undefined && Number.isFinite(Number(val))) {
+        if (!modified) modified = (Array.isArray(basePreset) ? basePreset : []).slice();
+        modified[map[key]] = Number(val);
+      }
+    }
+    return modified || basePreset;
+  }
+
   _playSequence(midiNote, velocity, presetIndex, preset, sequence) {
     const maxAlgorithmSteps = 128;
-    const initialAlgorithmTime = sequence.times[0] ?? 120;
+    const initialAlgorithmTime = sequence.defaultTime;
     const initialAlgorithmGate = sequence.gate;
     const token = `seq:${this._sequenceCounter++}`;
     const state = {
@@ -331,13 +371,13 @@ class YamaBruhSynth {
       this._emitNoteEnded(token);
     };
 
-    const getAlgorithmFallbackTime = (index) => {
-      return sequence.times[index % sequence.times.length] ?? sequence.times[sequence.times.length - 1] ?? 120;
+    const getAlgorithmFallbackTime = () => {
+      return sequence.defaultTime;
     };
 
     const normalizeAlgorithmTime = (value, index) => {
-      if (Number.isFinite(value)) return clamp(value, 20, 4000);
-      return getAlgorithmFallbackTime(index);
+      if (Number.isFinite(value)) return clamp(value, 0.01, 8);
+      return getAlgorithmFallbackTime();
     };
 
     const normalizeAlgorithmGate = (value, fallback) => {
@@ -345,8 +385,15 @@ class YamaBruhSynth {
       return clamp(fallback ?? sequence.gate, 0.05, 1.5);
     };
 
+    const startTime = performance.now();
+    let lastStepTime = startTime;
+
     const runAlgorithmStep = (step) => {
       if (state.stopped) return;
+      const now = performance.now();
+      const dt = (now - lastStepTime) / 1000;
+      const time = (now - startTime) / 1000;
+      lastStepTime = now;
       const note = Number(step?.n ?? step?.note);
       const stepVelocity = Number(step?.v ?? step?.velocity);
       const index = Number(step?.i);
@@ -363,8 +410,16 @@ class YamaBruhSynth {
         Number(step?.g ?? step?.gate),
         step?.g ?? step?.gate ?? initialAlgorithmGate,
       );
+      const stepCents = Number.isFinite(Number(step?.cents)) ? Number(step.cents) : 0;
       const voiceId = `${token}:alg:${index}`;
       const clampedVelocity = clamp(stepVelocity, 0.001, 1);
+      // Build sound param snapshot for context
+      const soundParams = {};
+      const sMap = YamaBruhSynth.SOUND_PARAM_MAP;
+      const baseArr = Array.isArray(preset) ? preset : this.getPresetParams(presetIndex);
+      const stepSoundArr = step._sound || baseArr;
+      for (const key in sMap) soundParams[key] = stepSoundArr[sMap[key]];
+      const stepSus = step?.sus !== undefined ? (step.sus ? 1 : 0) : (state.released ? 0 : 1);
       let nextState = null;
       const context = {
         n: note,
@@ -372,26 +427,33 @@ class YamaBruhSynth {
         i: index,
         t: stepTime,
         g: stepGate,
+        cents: stepCents,
+        sus: stepSus,
+        dt,
+        time,
         rootN: midiNote,
         rootV: velocity,
         rootT: initialAlgorithmTime,
         rootG: initialAlgorithmGate,
+        ...soundParams,
       };
 
       try {
         nextState = sequence.algorithmFn.length >= 2
-          ? sequence.algorithmFn(note, stepVelocity, index, midiNote, velocity, stepTime, stepGate)
+          ? sequence.algorithmFn(note, stepVelocity, index, midiNote, velocity, stepTime, stepGate) // legacy multi-arg
           : sequence.algorithmFn(context);
       } catch (error) {
         console.error('[SEQ ALGO] Execution failed:', error);
         finishSequence();
         return;
       }
-      const holdTime = Math.max(10, stepTime * stepGate);
+      const stepPreset = this._applyAlgoPreset(stepSoundArr, step);
+      const stepMs = this._beatsToMs(stepTime);
+      const holdTime = Math.max(10, stepMs * stepGate);
 
       stopCurrentVoice();
       state.currentVoiceId = voiceId;
-      this._postNoteOn(voiceId, note, clampedVelocity, preset);
+      this._postNoteOn(voiceId, note, clampedVelocity, stepPreset, stepCents, sequence.noteAlgo, stepSus === 1);
 
       schedule(() => {
         if (state.currentVoiceId === voiceId) {
@@ -401,14 +463,14 @@ class YamaBruhSynth {
       }, holdTime);
 
       if (!nextState || typeof nextState !== 'object') {
-        schedule(finishSequence, stepTime);
+        schedule(finishSequence, stepMs);
         return;
       }
 
       const nextNote = Number(nextState.n ?? nextState.note);
       const nextVelocity = Number(nextState.v ?? nextState.velocity);
       if (!Number.isFinite(nextNote) || !Number.isFinite(nextVelocity) || nextVelocity < 0) {
-        schedule(finishSequence, stepTime);
+        schedule(finishSequence, stepMs);
         return;
       }
 
@@ -421,13 +483,19 @@ class YamaBruhSynth {
         stepGate,
       );
 
+      const nextCents = Number.isFinite(Number(nextState.cents)) ? Number(nextState.cents) : stepCents;
+      const nextSound = this._applyAlgoPreset(stepSoundArr, nextState);
+
       schedule(() => runAlgorithmStep({
         n: nextNote,
         v: nextVelocity,
         i: index + 1,
         t: nextTime,
         g: nextGate,
-      }), stepTime);
+        cents: nextCents,
+        sus: nextState.sus !== undefined ? (nextState.sus ? 1 : 0) : undefined,
+        _sound: nextSound !== stepSoundArr ? nextSound : step._sound,
+      }), stepMs);
     };
 
     const runStep = (index) => {
@@ -444,13 +512,13 @@ class YamaBruhSynth {
 
       const stepNote = midiNote + sequence.offsets[index];
       const stepVelocity = clamp(velocity * sequence.levels[index], 0.001, 1);
-      const stepTime = sequence.times[index];
-      const holdTime = Math.max(10, stepTime * sequence.gate);
+      const stepMs = this._beatsToMs(sequence.times[index]);
+      const holdTime = Math.max(10, stepMs * sequence.gate);
       const voiceId = `${token}:${state.cycle}:${index}`;
 
       stopCurrentVoice();
       state.currentVoiceId = voiceId;
-      this._postNoteOn(voiceId, stepNote, stepVelocity, preset);
+      this._postNoteOn(voiceId, stepNote, stepVelocity, preset, 0, sequence.noteAlgo);
 
       schedule(() => {
         if (state.currentVoiceId === voiceId) {
@@ -459,16 +527,17 @@ class YamaBruhSynth {
         }
       }, holdTime);
 
-      schedule(() => runStep(index + 1), stepTime);
+      schedule(() => runStep(index + 1), stepMs);
     };
 
     if (sequence.algorithmFn) {
       runAlgorithmStep({
-        n: midiNote,
-        v: velocity,
+        n: sequence.initN !== null ? midiNote + sequence.initN : midiNote,
+        v: sequence.initV ?? velocity,
         i: 0,
-        t: initialAlgorithmTime,
-        g: initialAlgorithmGate,
+        t: sequence.initT ?? initialAlgorithmTime,
+        g: sequence.initG ?? initialAlgorithmGate,
+        cents: sequence.initCents,
       });
       return token;
     }
@@ -578,6 +647,18 @@ class YamaBruhSynth {
     if (this.wasm?.set_sustain) {
       this.wasm.set_sustain(on ? 1 : 0, mult || 3.0);
     }
+  }
+
+  setDelay(beats, feedback, mix) {
+    if (!this.workletNode) return;
+    const timeSec = this._beatsToMs(beats) / 1000;
+    const timeSamples = Math.floor(timeSec * 44100);
+    this.workletNode.port.postMessage({
+      type: 'delay',
+      timeSamples,
+      feedback: feedback / 100,
+      mix: mix / 100,
+    });
   }
 }
 

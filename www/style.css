@@ -21,7 +21,7 @@ html, body {
 #app {
   position: relative;
   z-index: 1;
-  max-width: 580px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 0 32px;
   min-height: 100vh;
@@ -122,6 +122,34 @@ html, body {
   margin-bottom: 6px;
   font-weight: bold;
   text-transform: uppercase;
+}
+
+.voice-bank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preset-name-input {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  color: #d0ccc4;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  width: 160px;
+  text-align: right;
+  outline: none;
+}
+
+.preset-name-input:focus {
+  border-color: #22ccaa;
+}
+
+.preset-name-input::placeholder {
+  color: #444;
 }
 
 /* ── Voice Bank Panel (reflective dark surface) ──────────────────── */
@@ -696,6 +724,108 @@ pre.code-snippet {
     inset 0 1px 2px rgba(0,0,0,0.2);
 }
 
+/* ── Two-column layout ─────────────────────────────────────────────── */
+.layout-columns {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+}
+
+.main-col {
+  flex: 0 0 580px;
+  min-width: 0;
+}
+
+.config-col {
+  flex: 1;
+  min-width: 280px;
+  padding-top: 126px;
+}
+
+.config-col .tweak-section {
+  margin: 8px 8px 0 0;
+}
+
+/* ── FX Rack ───────────────────────────────────────────────────────── */
+.fx-rack {
+  margin: 0 8px 8px 0;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+}
+
+.fx-rack-label {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #22ccaa;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.fx-module {
+  margin-bottom: 6px;
+}
+
+.fx-module:last-child {
+  margin-bottom: 0;
+}
+
+.fx-module-label {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: #888;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.fx-knobs {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.fx-knob-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fx-knob-group label {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #777;
+  font-weight: bold;
+}
+
+.fx-knob-group input[type="range"] {
+  width: 100%;
+}
+
+.fx-knob-group .tw-val {
+  font-size: 9px;
+  color: #aaa;
+  text-align: center;
+}
+
+.fx-select {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #333;
+  border-radius: 3px;
+  color: #d0ccc4;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  padding: 3px 4px;
+  outline: none;
+  width: 100%;
+}
+
+.fx-select:focus {
+  border-color: #22ccaa;
+}
+
 /* ── Tweak Section (collapsible) ───────────────────────────────────── */
 .tweak-section {
   margin: 16px 14px 0;
@@ -758,11 +888,48 @@ pre.code-snippet {
   font-weight: bold;
 }
 
+.seq-options-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.seq-options-row .seq-toggle-param {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seq-hint-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  background: rgba(0,0,0,0.3);
+  color: #22ccaa;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: auto;
+  line-height: 1;
+  padding: 0;
+}
+
+.seq-hint-btn:hover {
+  background: rgba(34,204,170,0.15);
+}
+
 .seq-note {
   margin: 0 0 10px;
   color: #7fa597;
   font-size: 9px;
   line-height: 1.5;
+}
+
+.seq-note code {
+  color: #22ccaa;
+  font-size: 9px;
 }
 
 .seq-grid {
@@ -781,7 +948,8 @@ pre.code-snippet {
   box-sizing: border-box;
 }
 
-.seq-grid textarea {
+.seq-grid textarea,
+.seq-textarea {
   width: 100%;
   min-height: 190px;
   padding: 7px 8px;
