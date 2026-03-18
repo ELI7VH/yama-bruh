@@ -1370,6 +1370,21 @@
     window.synth._sendPreset();
   });
 
+  document.getElementById('tweak-copy').addEventListener('click', () => {
+    const params = getTweakParams();
+    const rounded = params.map(v => {
+      if (Number.isInteger(v)) return v;
+      const s = v.toPrecision(4);
+      return parseFloat(s);
+    });
+    const name = getPresetDisplayName(currentPreset);
+    const line = '  [' + rounded.join(', ') + '], // ' + name;
+    navigator.clipboard.writeText(line).then(() => {
+      const lcdInfo = document.getElementById('lcd-info');
+      if (lcdInfo) lcdInfo.textContent = 'COPIED PRESET ' + currentPreset;
+    });
+  });
+
   const seqFields = {
     enabled: document.getElementById('seq-enabled'),
     source: document.getElementById('seq-source'),
