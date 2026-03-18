@@ -770,6 +770,7 @@ pre.code-snippet {
 .main-col {
   flex: 0 0 580px;
   min-width: 0;
+  padding-top: 1rem;
 }
 
 .config-col {
