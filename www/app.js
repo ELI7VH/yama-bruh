@@ -896,22 +896,32 @@
   const filterResoVal = document.getElementById('filter-reso-val');
 
   const savedFilter = JSON.parse(localStorage.getItem('yamabruh_filter') || '{}');
-  if (savedFilter.cutoff !== undefined) filterCutoffEl.value = savedFilter.cutoff;
+  if (savedFilter.knob !== undefined) filterCutoffEl.value = savedFilter.knob;
   if (savedFilter.reso !== undefined) filterResoEl.value = savedFilter.reso;
 
+  function cutoffKnobToHz(knob) {
+    // 0-100 → 20-20000 Hz logarithmic
+    return 20 * Math.pow(1000, knob / 100);
+  }
+
+  function formatHz(hz) {
+    if (hz >= 10000) return (hz / 1000).toFixed(1) + 'k';
+    if (hz >= 1000) return (hz / 1000).toFixed(2) + 'k';
+    return Math.round(hz) + '';
+  }
+
   function sendFilter() {
-    const cutoff = parseFloat(filterCutoffEl.value);
+    const knob = parseFloat(filterCutoffEl.value);
+    const cutoff = cutoffKnobToHz(knob);
     const reso = parseFloat(filterResoEl.value);
-    filterCutoffVal.textContent = cutoff >= 10000 ? (cutoff / 1000).toFixed(1) + 'k' : cutoff;
+    filterCutoffVal.textContent = formatHz(cutoff);
     filterResoVal.textContent = reso.toFixed(1);
     window.synth.setFilter(cutoff, reso);
-    localStorage.setItem('yamabruh_filter', JSON.stringify({ cutoff, reso }));
+    localStorage.setItem('yamabruh_filter', JSON.stringify({ knob, reso }));
   }
 
   filterCutoffEl.addEventListener('input', sendFilter);
   filterResoEl.addEventListener('input', sendFilter);
-  filterCutoffVal.textContent = filterCutoffEl.value >= 10000 ? (filterCutoffEl.value / 1000).toFixed(1) + 'k' : filterCutoffEl.value;
-  filterResoVal.textContent = parseFloat(filterResoEl.value).toFixed(1);
   sendFilter();
 
   // ── Drum Engine Init + Rhythm UI ──────────────────────────────────
@@ -1821,72 +1831,89 @@
     loadSequenceEditor();
   });
 
-  // ── MIDI Learn Mode ────────────────────────────────────────────────
+  // ── MIDI Learn Mode (global — editor + effects) ─────────────────────
+  const globalLearnBtn = document.getElementById('midi-learn-global');
   const learnBtn = document.getElementById('tweak-learn');
   let learnMode = false;
-  let learnTarget = null; // index of slider waiting for CC
-  const ccMap = JSON.parse(localStorage.getItem('yamabruh_cc_map') || '{}');
-  // Reverse map: CC number → slider index
-  const ccToSlider = {};
-  for (const [idx, cc] of Object.entries(ccMap)) {
-    ccToSlider[cc] = parseInt(idx);
+  let learnTargetId = null; // string ID of control waiting for CC
+  const ccMap = JSON.parse(localStorage.getItem('yamabruh_cc_map_v2') || '{}');
+  const ccToTarget = {};
+  for (const [id, cc] of Object.entries(ccMap)) {
+    ccToTarget[cc] = id;
   }
+
+  // All learnable controls: { id, element, label, onChange }
+  const learnableControls = {};
+
+  function registerLearnable(id, element, label, onChange) {
+    learnableControls[id] = { element, label, onChange };
+  }
+
+  // Register editor sliders
+  tweakSliders.forEach((slider, i) => {
+    const id = 'tw:' + i;
+    registerLearnable(id, slider, tweakIds[i].replace('tw-', '').toUpperCase(), () => sendTweakToWorklet());
+  });
+
+  // Register effects controls
+  registerLearnable('fx:filter-cutoff', filterCutoffEl, 'CUTOFF', sendFilter);
+  registerLearnable('fx:filter-reso', filterResoEl, 'RESO', sendFilter);
+  registerLearnable('fx:delay-feedback', delayFeedbackEl, 'DELAY FDBK', sendDelay);
+  registerLearnable('fx:delay-mix', delayMixEl, 'DELAY MIX', sendDelay);
 
   function setLearnMode(on) {
     learnMode = on;
-    learnTarget = null;
+    learnTargetId = null;
+    globalLearnBtn.classList.toggle('active', on);
     learnBtn.classList.toggle('active', on);
     learnBtn.textContent = on ? 'LEARNING...' : 'LEARN';
-    // Remove any pending highlight
-    tweakSliders.forEach(s => s.classList.remove('learn-waiting'));
+    Object.values(learnableControls).forEach(c => c.element.classList.remove('learn-target'));
     document.getElementById('lcd-info').textContent = on ? 'CLICK A FADER, THEN MOVE A KNOB' : 'LEARN OFF';
   }
 
-  learnBtn.addEventListener('click', () => {
-    setLearnMode(!learnMode);
-  });
+  globalLearnBtn.addEventListener('click', () => setLearnMode(!learnMode));
+  learnBtn.addEventListener('click', () => setLearnMode(!learnMode));
 
-  // Click a slider in learn mode → mark it as waiting for CC
-  tweakSliders.forEach((slider, i) => {
-    slider.addEventListener('pointerdown', () => {
+  // Click any learnable control in learn mode → mark as target
+  Object.entries(learnableControls).forEach(([id, ctrl]) => {
+    ctrl.element.addEventListener('pointerdown', () => {
       if (!learnMode) return;
-      learnTarget = i;
-      tweakSliders.forEach(s => s.classList.remove('learn-waiting'));
-      slider.classList.add('learn-waiting');
-      const paramName = tweakIds[i].replace('tw-', '').toUpperCase();
-      document.getElementById('lcd-info').textContent = 'MOVE KNOB FOR: ' + paramName;
+      learnTargetId = id;
+      Object.values(learnableControls).forEach(c => c.element.classList.remove('learn-target'));
+      ctrl.element.classList.add('learn-target');
+      document.getElementById('lcd-info').textContent = 'MOVE KNOB FOR: ' + ctrl.label;
     });
   });
 
   // CC callback — learn or apply mapped CCs
   window.midiManager.onCC = (cc, val) => {
-    if (learnMode && learnTarget !== null) {
-      // Map this CC to the selected slider
+    if (learnMode && learnTargetId !== null) {
       // Remove any old mapping for this CC
-      for (const [idx, oldCc] of Object.entries(ccMap)) {
+      for (const [id, oldCc] of Object.entries(ccMap)) {
         if (oldCc === cc) {
-          delete ccMap[idx];
-          delete ccToSlider[cc];
+          delete ccMap[id];
+          delete ccToTarget[cc];
         }
       }
-      ccMap[learnTarget] = cc;
-      ccToSlider[cc] = learnTarget;
-      localStorage.setItem('yamabruh_cc_map', JSON.stringify(ccMap));
-      const paramName = tweakIds[learnTarget].replace('tw-', '').toUpperCase();
-      document.getElementById('lcd-info').textContent = 'CC' + cc + ' → ' + paramName;
-      tweakSliders[learnTarget].classList.remove('learn-waiting');
-      learnTarget = null;
+      ccMap[learnTargetId] = cc;
+      ccToTarget[cc] = learnTargetId;
+      localStorage.setItem('yamabruh_cc_map_v2', JSON.stringify(ccMap));
+      const ctrl = learnableControls[learnTargetId];
+      document.getElementById('lcd-info').textContent = 'CC' + cc + ' → ' + (ctrl?.label || learnTargetId);
+      if (ctrl) ctrl.element.classList.remove('learn-target');
+      learnTargetId = null;
       return;
     }
 
-    // Apply mapped CCs to sliders
-    const sliderIdx = ccToSlider[cc];
-    if (sliderIdx !== undefined && tweakSliders[sliderIdx]) {
-      const slider = tweakSliders[sliderIdx];
-      const min = parseFloat(slider.min);
-      const max = parseFloat(slider.max);
-      slider.value = min + (val / 127) * (max - min);
-      sendTweakToWorklet();
+    // Apply mapped CCs
+    const targetId = ccToTarget[cc];
+    const ctrl = targetId ? learnableControls[targetId] : null;
+    if (ctrl) {
+      const el = ctrl.element;
+      const min = parseFloat(el.min);
+      const max = parseFloat(el.max);
+      el.value = min + (val / 127) * (max - min);
+      ctrl.onChange();
     }
   };
 

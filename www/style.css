@@ -742,6 +742,47 @@ pre.code-snippet {
   padding-top: 56px;
 }
 
+.config-col-header {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 8px 6px 0;
+}
+
+.midi-learn-global {
+  padding: 4px 12px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.4);
+  color: #888;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.midi-learn-global:hover {
+  background: rgba(0,0,0,0.5);
+  color: #aaa;
+}
+
+.midi-learn-global.active {
+  background: rgba(34,204,170,0.2);
+  color: #22ccaa;
+  border-color: #22ccaa;
+  animation: learn-pulse 1s ease-in-out infinite;
+}
+
+@keyframes learn-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.learn-target {
+  outline: 2px solid #22ccaa !important;
+  outline-offset: 2px;
+}
+
 .config-col .tweak-section {
   margin: 8px 8px 0 0;
 }

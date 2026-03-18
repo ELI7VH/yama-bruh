@@ -145,6 +145,10 @@
 
     <div class="config-col">
 
+    <div class="config-col-header">
+      <button class="midi-learn-global" id="midi-learn-global">MIDI LEARN</button>
+    </div>
+
     <!-- Effects (collapsible) -->
     <div class="tweak-section">
       <button class="tweak-toggle" id="fx-rack-toggle">EFFECTS &#9660;</button>
@@ -181,8 +185,8 @@
           <div class="fx-knobs">
             <div class="fx-knob-group">
               <label>CUTOFF</label>
-              <input type="range" min="20" max="20000" step="1" value="20000" id="filter-cutoff">
-              <span class="tw-val" id="filter-cutoff-val">20000</span>
+              <input type="range" min="0" max="100" step="0.1" value="100" id="filter-cutoff">
+              <span class="tw-val" id="filter-cutoff-val">20k</span>
             </div>
             <div class="fx-knob-group">
               <label>RESO</label>
