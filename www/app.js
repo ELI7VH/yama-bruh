@@ -1949,6 +1949,13 @@
   }
 
   globalLearnBtn.addEventListener('click', () => setLearnMode(!learnMode));
+  document.getElementById('midi-learn-clear').addEventListener('click', () => {
+    Object.keys(ccMap).forEach(k => delete ccMap[k]);
+    Object.keys(ccToTarget).forEach(k => delete ccToTarget[k]);
+    localStorage.removeItem('yamabruh_cc_map_v2');
+    setLearnMode(false);
+    document.getElementById('lcd-info').textContent = 'CC MAPPINGS CLEARED';
+  });
 
   // Click any learnable control in learn mode → mark as target
   Object.entries(learnableControls).forEach(([id, ctrl]) => {
