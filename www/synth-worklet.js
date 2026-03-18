@@ -428,19 +428,39 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
           v.curFreq = v.freq;
         }
 
-        // Apply pitch bend + noteAlgo to base frequency
+        // Apply pitch bend + noteAlgo to base frequency and synth params
         let noteAlgoCents = 0;
+        let naMod = null; // noteAlgo modulations
         if (v.noteAlgo) {
           try {
-            const result = v.noteAlgo({ time: v.age, i: v.sampleIndex, freq: v.curFreq, v: v.velocity, n: v.note, dt });
-            noteAlgoCents = typeof result === 'number' ? result : (result?.cents ?? 0);
+            const result = v.noteAlgo({
+              time: v.age, i: v.sampleIndex, freq: v.curFreq,
+              v: v.velocity, n: v.note, dt,
+              feedback: p.feedback, mDepth: p.modDepth,
+              cRatio: c.mult, mRatio: m.mult,
+              cWave: c.wave, mWave: m.wave,
+            });
+            if (typeof result === 'number') {
+              noteAlgoCents = result;
+            } else if (result && typeof result === 'object') {
+              noteAlgoCents = result.cents || 0;
+              naMod = result;
+            }
           } catch (_) { v.noteAlgo = null; }
         }
         v.sampleIndex++;
         const baseFreq = v.curFreq * pbMult * (noteAlgoCents !== 0 ? Math.pow(2, noteAlgoCents / 1200) : 1);
 
+        // noteAlgo can override synth params per-sample
+        const naFeedback = naMod && Number.isFinite(naMod.feedback) ? naMod.feedback : p.feedback;
+        const naModDepth = naMod && Number.isFinite(naMod.mDepth) ? naMod.mDepth : p.modDepth;
+        const naCMult = naMod && Number.isFinite(naMod.cRatio) ? naMod.cRatio : c.mult;
+        const naMMult = naMod && Number.isFinite(naMod.mRatio) ? naMod.mRatio : m.mult;
+        const naCWave = naMod && Number.isFinite(naMod.cWave) ? (naMod.cWave | 0) : c.wave;
+        const naMWave = naMod && Number.isFinite(naMod.mWave) ? (naMod.mWave | 0) : m.wave;
+
         // Mod wheel can still boost mod index in the extended control path.
-        const mi = modTgt === 'modIndex' ? p.modDepth * (1 + modW * 3) : p.modDepth;
+        const mi = modTgt === 'modIndex' ? naModDepth * (1 + modW * 3) : naModDepth;
         const cRel = susOn ? c.release * susMult : c.release;
         const mRel = susOn ? m.release * susMult : m.release;
         const cVib = vibratoDepth(c.vibrato, modW, modTgt);
@@ -448,8 +468,8 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
         const cFreq = baseFreq * (1 + cVib * chipVibVal + vibMod);
         const mFreq = baseFreq * (1 + mVib * chipVibVal + vibMod);
 
-        const crf = cFreq * c.mult;
-        const mrf = mFreq * m.mult;
+        const crf = cFreq * naCMult;
+        const mrf = mFreq * naMMult;
 
         // KSR scales envelope speed per operator.
         let atkScaled = c.attack, decScaled = c.decay, relScaled = cRel;
@@ -541,10 +561,10 @@ class YamaBruhProcessor extends AudioWorkletProcessor {
 
         // ── 2-op FM with YM2413 waveforms ──
         // Feedback uses raw (pre-envelope) modulator — hardware-accurate
-        const msRaw = _waveform(v.mp + p.feedback * v.pm, m.wave, noise);
+        const msRaw = _waveform(v.mp + naFeedback * v.pm, naMWave, noise);
         v.pm = msRaw; // feedback loop stays alive regardless of mod envelope
         const ms = msRaw * p.modLevel * mEnv * mTrem * mKsl;
-        const voiceSample = _waveform(v.cp + mi * ms, c.wave, noise) * env * v.velocity * 0.35 * cTrem * cKsl;
+        const voiceSample = _waveform(v.cp + mi * ms, naCWave, noise) * env * v.velocity * 0.35 * cTrem * cKsl;
         let outSample = voiceSample;
 
         if (v.choking) {

@@ -328,7 +328,7 @@
         <div class="seq-note" id="seq-hint" style="display:none">
           <strong>algorithm</strong> receives <code>{ n, v, i, t, g, cents, sus, dt, time, rootN, rootV, rootT, rootG }</code>, returns <code>{ n, v, t, g, cents }</code>. Stops when <code>v &lt; 0</code>. <code>gated: true</code> stops on key release.<br>
           <strong>Sound params:</strong> <code>cRatio, cAttack, cDecay, cSustain, cRelease, cWave, cEgType, tremolo, ksl, mRatio, mDepth, mFeedback, mAttack, mDecay, mSustain, mRelease, mWave, mEgType, modLevel</code><br>
-          <strong>noteAlgo</strong> runs per-sample: receives <code>{ time, i, freq, v, n, dt }</code>, returns cents.<br>
+          <strong>noteAlgo</strong> runs per-sample on every note (sequenced or normal). Receives <code>{ time, i, freq, v, n, dt, feedback, mDepth, cRatio, mRatio, cWave, mWave }</code>. Returns number (cents) or <code>{ cents, feedback, mDepth, cRatio, mRatio, cWave, mWave }</code>.<br>
           <strong>layer:</strong> <code>[0, 70]</code> plays additional presets simultaneously (by index).<br>
           <strong>Globals:</strong> <code>sin, cos, abs, floor, ceil, round, min, max, pow, sqrt, log, exp, random, PI, TAU, clamp</code>
         </div>

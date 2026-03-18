@@ -64,7 +64,8 @@ function normalizeSequenceDef(def) {
   const times = rawTimes.length ? rawTimes : [defaultTime];
   const baseLength = Math.max(offsets.length, levels.length, times.length, hasAlgorithm ? 1 : 0);
   const hasLayer = Array.isArray(config.layer) && config.layer.length > 0;
-  if (!hasAlgorithm && !baseLength && !hasLayer) return null;
+  const hasNoteAlgo = typeof config.noteAlgo === 'function' || (typeof config.noteAlgo === 'string' && config.noteAlgo.trim());
+  if (!hasAlgorithm && !baseLength && !hasLayer && !hasNoteAlgo) return null;
   const stepOffsets = Array.from({ length: baseLength }, (_, i) => offsets.length ? offsets[i % offsets.length] : 0);
   const stepLevels = Array.from({ length: baseLength }, (_, i) => clamp(levels.length ? levels[i % levels.length] : 1, 0.01, 2));
   const stepTimes = Array.from({ length: baseLength }, (_, i) => clamp(times[i % times.length], 0.01, 8));
@@ -596,12 +597,14 @@ class YamaBruhSynth {
       layerIds.push(layerId);
     }
 
-    if (sequence) {
+    const noteAlgo = sequence?.noteAlgo || null;
+    const hasSequenceSteps = sequence && (sequence.algorithmFn || sequence.offsets.length > 0);
+    if (hasSequenceSteps) {
       const token = this._playSequence(midiNote, velocity, resolvedPreset, preset, sequence);
       if (layerIds.length) this._layerMap.set(token, layerIds);
       return token;
     }
-    this._postNoteOn(midiNote, midiNote, velocity, preset);
+    this._postNoteOn(midiNote, midiNote, velocity, preset, 0, noteAlgo);
     if (layerIds.length) this._layerMap.set(midiNote, layerIds);
     return midiNote;
   }
