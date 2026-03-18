@@ -775,7 +775,7 @@ pre.code-snippet {
 .config-col {
   flex: 1;
   min-width: 280px;
-  padding-top: 56px;
+  padding-top: 0;
 }
 
 .config-col-header {
