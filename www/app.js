@@ -1255,6 +1255,7 @@
 
   function updateDrumEditor() {
     const t = getEditorTarget();
+    const defaults = window.drums.getSoundDefaults(t.sound, t.bank);
     drumEditorName.textContent = t.label;
     drumFields.key.value = t.isNote ? '' : formatDrumKey(t.key);
     drumFields.key.disabled = t.isNote;
@@ -1264,14 +1265,14 @@
     drumFields.pitchSemis.value = t.overrides.pitchSemis ?? 0;
     drumFields.velocity.value = t.velocity;
     drumFields.bank.value = t.bank;
-    drumFields.decay.value = t.overrides.decay ?? 0.25;
-    drumFields.modIndex.value = t.overrides.modIndex ?? 3;
-    drumFields.pitchSweep.value = t.overrides.pitchSweep ?? 0;
-    drumFields.pitchDecay.value = t.overrides.pitchDecay ?? 0.015;
-    drumFields.noiseAmt.value = t.overrides.noiseAmt ?? 0;
-    drumFields.clickAmt.value = t.overrides.clickAmt ?? 0.3;
-    drumFields.carrierFreq.value = t.overrides.carrierFreq ?? 60;
-    drumFields.modFreq.value = t.overrides.modFreq ?? 90;
+    drumFields.decay.value = t.overrides.decay ?? defaults.decay;
+    drumFields.modIndex.value = t.overrides.modIndex ?? defaults.modIndex;
+    drumFields.pitchSweep.value = t.overrides.pitchSweep ?? defaults.pitchSweep;
+    drumFields.pitchDecay.value = t.overrides.pitchDecay ?? defaults.pitchDecay;
+    drumFields.noiseAmt.value = t.overrides.noiseAmt ?? defaults.noiseAmt;
+    drumFields.clickAmt.value = t.overrides.clickAmt ?? defaults.clickAmt;
+    drumFields.carrierFreq.value = t.overrides.carrierFreq ?? defaults.carrierFreq;
+    drumFields.modFreq.value = t.overrides.modFreq ?? defaults.modFreq;
 
     drumVals.key.textContent = t.isNote ? 'N' + t.noteNum : formatDrumKey(t.key);
     drumVals.sound.textContent = t.sound;

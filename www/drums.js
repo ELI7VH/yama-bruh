@@ -161,6 +161,36 @@ class YamaBruhDrums {
 
   getBankCount() { return 8; }
 
+  // Base defaults for each sound (mirrors drum-worklet.js _makeDrum)
+  static SOUND_DEFAULTS = {
+    kick:    { carrierFreq: 60, modFreq: 90, modIndex: 3.0, pitchSweep: 160, pitchDecay: 0.015, decay: 0.25, noiseAmt: 0, clickAmt: 0.3 },
+    snare:   { carrierFreq: 200, modFreq: 340, modIndex: 2.5, pitchSweep: 60, pitchDecay: 0.01, decay: 0.18, noiseAmt: 0.6, clickAmt: 0.15 },
+    hihat_c: { carrierFreq: 800, modFreq: 5600, modIndex: 4.0, pitchSweep: 0, pitchDecay: 0.01, decay: 0.04, noiseAmt: 0.5, clickAmt: 0 },
+    hihat_o: { carrierFreq: 800, modFreq: 5600, modIndex: 4.0, pitchSweep: 0, pitchDecay: 0.01, decay: 0.22, noiseAmt: 0.5, clickAmt: 0 },
+    clap:    { carrierFreq: 1200, modFreq: 2400, modIndex: 1.5, pitchSweep: 0, pitchDecay: 0.01, decay: 0.2, noiseAmt: 0.85, clickAmt: 0 },
+    tom:     { carrierFreq: 165, modFreq: 248, modIndex: 2.0, pitchSweep: 83, pitchDecay: 0.02, decay: 0.22, noiseAmt: 0, clickAmt: 0.1 },
+    rimshot: { carrierFreq: 500, modFreq: 1600, modIndex: 2.0, pitchSweep: 200, pitchDecay: 0.005, decay: 0.06, noiseAmt: 0.2, clickAmt: 0.5 },
+    cowbell: { carrierFreq: 587, modFreq: 829, modIndex: 1.8, pitchSweep: 0, pitchDecay: 0.01, decay: 0.12, noiseAmt: 0, clickAmt: 0.1 },
+    cymbal:  { carrierFreq: 500, modFreq: 3500, modIndex: 5.0, pitchSweep: 0, pitchDecay: 0.01, decay: 0.6, noiseAmt: 0.3, clickAmt: 0 },
+  };
+
+  static BANK_MODS = [
+    {},
+    { kick: { decay: 0.4, pitchSweep: 220, modIndex: 1.5, clickAmt: 0.1 }, snare: { noiseAmt: 0.75, decay: 0.22, modIndex: 1.5, clickAmt: 0.05 }, hihat_c: { decay: 0.025, carrierFreq: 1200, modFreq: 7800, modIndex: 5.0 }, hihat_o: { decay: 0.35, carrierFreq: 1200, modFreq: 7800, modIndex: 5.0 }, tom: { modIndex: 1.0, pitchSweep: 40, decay: 0.35, noiseAmt: 0 }, clap: { decay: 0.25, noiseAmt: 0.9 } },
+    { kick: { decay: 0.35, pitchSweep: 200, modIndex: 4.0, clickAmt: 0.5 }, snare: { decay: 0.25, modIndex: 3.5, clickAmt: 0.3, noiseAmt: 0.5 }, tom: { decay: 0.3, modIndex: 3.0, pitchSweep: 100, clickAmt: 0.2 }, cymbal: { decay: 1.2 } },
+    { kick: { decay: 0.15, pitchSweep: 80, modIndex: 1.5, clickAmt: 0.1 }, snare: { noiseAmt: 0.85, decay: 0.3, modIndex: 0.8, clickAmt: 0.0 }, hihat_c: { decay: 0.06, noiseAmt: 0.7, modIndex: 2.5 }, hihat_o: { decay: 0.3, noiseAmt: 0.7, modIndex: 2.5 }, tom: { modIndex: 1.2, decay: 0.2, noiseAmt: 0.1 }, rimshot: { noiseAmt: 0.4, clickAmt: 0.3 } },
+    { kick: { carrierFreq: 50, decay: 0.5, pitchSweep: 30, modIndex: 1.0, clickAmt: 0.05 }, snare: { carrierFreq: 280, decay: 0.15, modIndex: 1.8, noiseAmt: 0.3, clickAmt: 0.2 }, tom: { modIndex: 1.0, pitchSweep: 20, decay: 0.45, clickAmt: 0.05 }, cymbal: { decay: 1.5, carrierFreq: 700, modIndex: 6.0 } },
+    { kick: { carrierFreq: 55, decay: 0.18, pitchSweep: 300, pitchDecay: 0.008, modIndex: 5.0, clickAmt: 0.6 }, snare: { carrierFreq: 250, modIndex: 4.0, noiseAmt: 0.4, decay: 0.12, clickAmt: 0.4 }, hihat_c: { decay: 0.02, carrierFreq: 1500, modFreq: 9000, modIndex: 6.0 }, hihat_o: { decay: 0.15, carrierFreq: 1500, modFreq: 9000, modIndex: 6.0 }, tom: { modIndex: 3.5, pitchSweep: 120, decay: 0.15, clickAmt: 0.3 }, clap: { decay: 0.12, noiseAmt: 0.95 }, cowbell: { carrierFreq: 700, modFreq: 1000, modIndex: 2.5 } },
+    { kick: { carrierFreq: 80, decay: 0.2, pitchSweep: 50, modIndex: 1.5, clickAmt: 0.15 }, snare: { carrierFreq: 300, decay: 0.1, modIndex: 1.5, noiseAmt: 0.2, clickAmt: 0.35 }, tom: { modIndex: 1.5, pitchSweep: 30, pitchDecay: 0.01, decay: 0.15, clickAmt: 0.25 }, rimshot: { decay: 0.04, clickAmt: 0.7, noiseAmt: 0.1 }, cowbell: { decay: 0.08 } },
+    { kick: { decay: 0.2, modIndex: 6.0, clickAmt: 0.15 }, snare: { modIndex: 5.0, noiseAmt: 0.7, decay: 0.15 }, hihat_c: { modIndex: 7.0, decay: 0.03 }, hihat_o: { modIndex: 7.0, decay: 0.18 }, tom: { modIndex: 4.0, decay: 0.2 } },
+  ];
+
+  getSoundDefaults(sound, bankIdx) {
+    const base = YamaBruhDrums.SOUND_DEFAULTS[sound] || { carrierFreq: 200, modFreq: 400, modIndex: 2, pitchSweep: 0, pitchDecay: 0.01, decay: 0.2, noiseAmt: 0, clickAmt: 0 };
+    const bankMods = (YamaBruhDrums.BANK_MODS[bankIdx] || {})[sound] || {};
+    return { ...base, ...bankMods };
+  }
+
   getSoundNames() {
     return this.soundNames.slice();
   }
