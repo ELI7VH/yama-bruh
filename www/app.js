@@ -1378,8 +1378,17 @@
       return parseFloat(s);
     });
     const name = getPresetDisplayName(currentPreset);
-    const line = '  [' + rounded.join(', ') + '], // ' + name;
-    navigator.clipboard.writeText(line).then(() => {
+    const seqDef = getSequenceDefForPreset(currentPreset);
+    const seqSource = seqDef?.source ? seqDef.source.trim() : null;
+    const lines = [
+      '// ' + String(currentPreset).padStart(2, '0') + ' ' + name,
+      '[' + rounded.join(', ') + ']',
+    ];
+    if (seqSource) {
+      lines.push('// sequence:');
+      lines.push(seqSource);
+    }
+    navigator.clipboard.writeText(lines.join('\n')).then(() => {
       const lcdInfo = document.getElementById('lcd-info');
       if (lcdInfo) lcdInfo.textContent = 'COPIED PRESET ' + currentPreset;
     });
