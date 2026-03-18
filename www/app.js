@@ -1392,7 +1392,21 @@
   drumPadGrid.addEventListener('click', (event) => {
     const btn = event.target.closest('[data-drum-pad]');
     if (!btn) return;
-    setActiveDrumPad(parseInt(btn.dataset.drumPad, 10));
+    const padIdx = parseInt(btn.dataset.drumPad, 10);
+    if (activeMidiDrumNote !== null) {
+      // Assign this pad's sound to the active MIDI note
+      const pad = drumPads[padIdx];
+      const existing = getDrumNoteConfig(activeMidiDrumNote) || { overrides: {} };
+      existing.sound = pad.sound;
+      existing.bank = pad.bank;
+      setDrumNoteConfig(activeMidiDrumNote, existing);
+      updateDrumEditor();
+      // Preview with the new sound
+      window.synth.ensureContext();
+      window.drums.triggerPad(resolveDrumPadConfig(activeMidiDrumNote, pad.sound, 0.9));
+      return;
+    }
+    setActiveDrumPad(padIdx);
     previewDrumPad(activeDrumPad);
   });
 
